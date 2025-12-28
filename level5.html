@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIAP LIBAS ASPD DIY SD | Mafia Quiz</title>
+    
+    <style>
+        /* --- RESET & VARIABLES --- */
+        
+    :root {
+        --bg-dark: #0f172a;
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --accent: #d4af37;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --text-main: #ffffff;
+        --text-muted: #94a3b8;
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+  
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html { height: 100%; }
+        body { background-color: var(--bg-dark); color: var(--text-main); height: 100dvh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; position: fixed; }
+
+        /* --- LAYOUT --- */
+        header { flex: 0 0 60px; background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid var(--glass-border); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 40; }
+        main { flex: 1; overflow-y: auto; position: relative; padding: 1rem; display: flex; flex-direction: column; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+        footer { flex: 0 0 auto; background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--glass-border); backdrop-filter: blur(5px); padding: 0.75rem 1rem; z-index: 40; }
+
+        /* --- COMPONENTS --- */
+        .card-container { width: 100%; max-width: 800px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--card-shadow); }
+        #questionCard { border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; min-height: auto; flex-grow: 1; animation: fadein 0.3s ease-out; }
+        @keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2#qText { font-size: 1.1rem; line-height: 1.5; margin-bottom: 1rem; font-weight: 600; }
+        @media (min-width: 768px) { h2#qText { font-size: 1.35rem; } }
+        
+        /* Global Image Safety */
+        img { max-width: 100%; height: auto; display: inline-block; }
+        
+        button, a.btn { cursor: pointer; border: none; outline: none; transition: all 0.2s; user-select: none; text-decoration: none; }
+        button:active, a.btn:active { transform: scale(0.98); }
+        
+        .btn { padding: 0.75rem 1rem; border-radius: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; }
+        .btn-primary { background: linear-gradient(to right, var(--primary), var(--accent)); box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
+        .btn-nav { background: #334155; color: white; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-finish { background: var(--success); }
+        .btn-success { background: #25D366; color: white; }
+        .btn-outline { border: 1px solid var(--primary); color: var(--primary); background: transparent; }
+
+        .btn-option { width: 100%; text-align: left; padding: 0.85rem; border-radius: 0.75rem; background: rgba(30, 41, 59, 0.5); border: 1px solid var(--glass-border); color: var(--text-muted); margin-bottom: 0.5rem; display: flex; align-items: center; font-size: 0.9rem; }
+        .btn-option:active, .btn-option:hover { background: rgba(50, 60, 80, 0.8); border-color: var(--primary); color: white; }
+        .btn-option.correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success); color: #a7f3d0; }
+        .btn-option.wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #fca5a5; }
+        .btn-option.missed { border: 1px dashed var(--success); opacity: 0.7; }
+        
+        .option-icon { margin-right:10px; border:1px solid currentColor; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:bold; flex-shrink: 0; }
+        .btn-option.checkbox .option-icon { border-radius: 4px; } 
+
+        textarea, input, select { width: 100%; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(139, 92, 246, 0.3); color: white; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.9rem; }
+        .match-row { background: rgba(30, 41, 59, 0.4); padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--glass-border); }
+        
+        /* Effects */
+        .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.2; z-index: -1; animation: pulse 6s infinite ease-in-out; }
+        .blob-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: var(--primary); }
+        .blob-2 { bottom: -10%; right: -10%; width: 250px; height: 250px; background: var(--accent); animation-delay: 3s; }
+        @keyframes pulse { 0%, 100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.25; transform: scale(1.1); } }
+
+        .confetti { position: fixed; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; z-index: 60; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; overflow-y: auto; }
+        .modal-content { width: 100%; max-width: 400px; border-radius: 1rem; padding: 1.5rem; border-top: 4px solid var(--primary); margin: auto; }
+
+        .badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid; }
+        .badge-pg { background: rgba(59, 130, 246, 0.1); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+        .badge-complex { background: rgba(236, 72, 153, 0.1); color: #fbcfe8; border-color: rgba(236, 72, 153, 0.3); }
+        .badge-match { background: rgba(20, 184, 166, 0.1); color: #5eead4; border-color: rgba(20, 184, 166, 0.3); }
+        .badge-mix { background: rgba(168, 85, 247, 0.1); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); }
+
+        .map-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+        .map-btn { aspect-ratio: 1; background: #334155; border-radius: 0.35rem; color: #94a3b8; font-weight: bold; font-size: 0.8rem; }
+        .map-btn.active { background: var(--primary); color: white; border: 1px solid white; }
+        .map-btn.answered { background: var(--success); color: #064e3b; }
+
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .text-center { text-align: center; }
+
+        .wa-banner { background: linear-gradient(90deg, #064e3b, #065f46); padding: 0.5rem 0.75rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between; color: white; text-decoration: none; border: 1px solid #047857; margin-top: 0.5rem; }
+    </style>
+
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- START MODAL -->
+    <div id="startModal" class="modal-overlay">
+        <div class="glass modal-content">
+            <div class="text-center mb-4">
+                
+                   <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px rgba(0,0,0,0.4); transform: rotate(-5deg);">
+                        <span style="color: white; font-weight: 900; font-size: 2rem; transform: rotate(5deg);">MQ</span>
+                   </div>
+                
+            </div>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span style="background: var(--accent); color: black; padding: 2px 10px; border-radius: 4px; font-weight: 900; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;">Mafia Quiz</span>
+            </div>
+            <h1 style="font-size: 1.75rem; font-weight: 900; text-align: center; margin-bottom: 0.25rem; background: -webkit-linear-gradient(0deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1;">SIAP LIBAS ASPD DIY SD</h1>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 1.5rem; font-weight: 600;">Level 5-Simulasi 2</p>
+            
+            <div style="background: rgba(15,23,42,0.5); padding: 1.25rem; border-radius: 1rem; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 1.5rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                <div class="flex justify-between" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.6rem; margin-bottom: 0.6rem;">
+                    <span style="color:var(--text-muted)">Durasi</span> <b style="color: white;">120 Menit</b>
+                </div>
+                <div class="flex justify-between" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.6rem; margin-bottom: 0.6rem;">
+                    <span style="color:var(--text-muted)">Jumlah Soal</span> <b style="color: white;">30 Butir</b>
+                </div>
+                <div class="flex flex-col" style="gap: 4px;">
+                    <span style="color:var(--text-muted); font-size: 0.8rem;">Variasi Soal:</span> <b style="color: var(--accent); font-size: 0.8rem; text-transform: uppercase;">30 PG</b>
+                </div>
+            </div>
+            
+            <button id="btnStartQuiz" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem; border-radius: 1rem;">
+                MULAI SEKARANG
+            </button>
+            <a href="https://wa.me/6285643573687?text=Halo%20Mafia%20Quiz%2C%20saya%20ingin%20memesan%20aplikasi%20kuis%20interaktif%20seperti%20%22SIAP%20LIBAS%20ASPD%20DIY%20SD%22." target="_blank" rel="noopener noreferrer" class="btn btn-success" style="width: 100%; font-size: 0.9rem; margin-top: 0.75rem; border: 1px solid #4ade80; padding: 0.85rem; border-radius: 1rem;">
+                PESAN KUIS @ MAFIA QUIZ
+            </a>
+            <p style="text-align: center; font-size: 0.65rem; color: var(--text-muted); margin-top: 1.25rem; opacity: 0.6; font-weight: 800; letter-spacing: 1px; white-space: nowrap;">POWERED BY MAFIA QUIZ CORE SYSTEM</p>
+        </div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="appContainer" class="hidden" style="width: 100%; height: 100%; flex-direction: column;">
+        
+        <!-- BIG PROMINENT HEADER -->
+        <header style="height: 60px; padding: 0 1rem;">
+            <div style="display: flex; align-items: center;">
+                
+                   <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.9rem; color:white; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transform: rotate(-3deg); margin-right: 12px;">
+                      <span style="transform: rotate(3deg);">MQ</span>
+                   </div>
+                
+                <div class="flex-col" style="gap: 0;">
+                  <span style="font-weight:900; font-size:0.9rem; line-height:1; letter-spacing: -0.5px; color: white; white-space: nowrap;">MAFIA QUIZ</span>
+                  <span style="font-size: 0.55rem; color: var(--accent); font-weight: 800; letter-spacing: 2px; white-space: nowrap;">CORE SYSTEM</span>
+                </div>
+            </div>
+            
+            <div style="background:rgba(0,0,0,0.5); padding:0.25rem 0.75rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);">
+                <span id="timerDisplay" style="font-family:monospace; font-weight:900; font-size:0.9rem; color:var(--warning); letter-spacing: 1px;">00:00:00</span>
+            </div>
+
+            <button onclick="toggleMap()" style="background:rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color:var(--text-muted); padding:0.4rem; border-radius: 10px; position:relative; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+                <span id="answeredCount" style="position:absolute; top:-4px; right:-4px; background:var(--success); color:black; font-size:9px; font-weight:900; width:16px; height:16px; border-radius:5px; display:flex; align-items:center; justify-content:center; border: 2px solid var(--bg-dark);">0</span>
+            </button>
+        </header>
+
+        <div id="mapModal" class="modal-overlay hidden" style="z-index: 45;">
+            <div class="glass modal-content" style="max-width: 340px; padding: 2rem;">
+                <div class="flex justify-between align-center mb-6">
+                    <h3 style="font-weight:900; font-size: 1.3rem; letter-spacing: -1px; color: white;">NAVIGASI SOAL</h3>
+                    <button onclick="toggleMap()" style="background:rgba(239,68,68,0.1); border: 1px solid var(--danger); color:var(--danger); width:32px; height:32px; border-radius: 8px; font-weight: 900;">✕</button>
+                </div>
+                <div id="mapGrid" class="map-grid" style="gap: 0.75rem;"></div>
+                <div style="margin-top: 2rem; text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: 900; letter-spacing: 3px; opacity: 0.5;">MAFIA QUIZ NAVCORE</div>
+            </div>
+        </div>
+
+        <main style="padding: 1.5rem 1rem;">
+            <div class="card-container">
+                <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; margin-bottom:1.5rem; width:100%; position: relative; overflow: hidden;">
+                    <div id="progressBar" style="height:100%; background: linear-gradient(to right, var(--primary), var(--accent)); width:0%; border-radius:3px; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--primary);"></div>
+                </div>
+
+                <div id="questionCard" class="glass" style="padding: 2rem; border-radius: 1.5rem;">
+                    <div class="flex justify-between align-center mb-6">
+                        <span id="qTypeBadge" class="badge badge-pg" style="padding: 0.4rem 1rem; font-size: 0.75rem;">PG</span>
+                        <div style="text-align: right;">
+                           <span id="qNumber" style="font-family:monospace; color:var(--text-muted); font-size:0.9rem; font-weight: 900; background: rgba(0,0,0,0.2); padding: 0.2rem 0.6rem; border-radius: 6px;">1 / 30</span>
+                        </div>
+                    </div>
+
+                    <h2 id="qText" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 2rem; color: white;" dir="auto">...</h2>
+                    <div id="qContent" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+
+                    <div id="feedbackContainer" class="hidden" style="margin-top:2rem; padding:1.25rem; border-radius:1rem; background:rgba(15,23,42,0.8); border-left:6px solid var(--warning); font-size:0.9rem; line-height:1.6; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                        <b style="display:block; margin-bottom:0.5rem; color: var(--warning); font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px;">🔑 PEMBAHASAN:</b>
+                        <span id="feedbackText" style="color: #cbd5e1;" dir="auto"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer style="padding: 0.75rem;">
+            <div class="card-container">
+                <div class="flex justify-between gap-3" style="margin-bottom: 0.75rem;">
+                    <button id="btnPrev" onclick="prevQ()" class="btn btn-nav" style="flex:1; padding: 0.75rem; border-radius: 10px; font-weight: 800; font-size: 0.85rem;" disabled>KEMBALI</button>
+                    <button id="btnNext" onclick="nextQ()" class="btn btn-primary" style="flex:2; padding: 0.75rem; border-radius: 10px; font-weight: 900; font-size: 0.9rem; letter-spacing: 1px;">LANJUT</button>
+                    <button id="btnFinish" onclick="finishQuiz()" class="btn btn-finish hidden" style="flex:2; padding: 0.75rem; border-radius: 10px; font-weight: 900; font-size: 0.9rem; letter-spacing: 1px;">SELESAI</button>
+                </div>
+                
+                <a href="https://wa.me/6285643573687?text=Halo%20Admin%20Mafia%20Quiz%2C%20saya%20tertarik%20membuat%20aplikasi%20kuis%20untuk%20materi%20lain." class="wa-banner" target="_blank" rel="noopener noreferrer" style="padding: 0.6rem 0.75rem; border-radius: 0.75rem; background: linear-gradient(135deg, #064e3b, #065f46); border: 1px solid #059669; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <div style="display: flex; align-items: center;">
+                        <div style="background: #22c55e; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin-right: 12px;">
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16.75 13.96c.25.13.36.25.36.43 0 .12-.05.22-.11.25-.21.28-1.05.65-1.39.75-.41.11-.79.17-1.14.17-.62 0-1.29-.18-1.92-.51-.43-.22-1.03-.66-1.74-1.25-1.04-.88-1.83-1.86-2.29-2.84-.15-.32-.23-.65-.23-.96 0-.41.17-.77.51-1.11.16-.15.35-.24.51-.24.16 0 .32.06.45.2.16.17.55 1.13.6 1.25.06.15.09.28.09.4 0 .15-.06.28-.18.42l-.28.3c-.09.11-.19.24-.09.43.32.55.9 1.28 1.68 1.98.66.59 1.34.98 1.86 1.17.16.06.32.08.46.08.28 0 .58-.15.78-.39l.34-.42c.15-.17.32-.23.5-.17zM12.05 2.05C6.58 2.05 2.13 6.5 2.13 11.97c0 1.76.46 3.4 1.26 4.83l-1.33 4.86 4.98-1.3c1.39.76 2.97 1.18 4.61 1.18 5.47 0 9.92-4.45 9.92-9.92 0-5.47-4.45-9.92-9.52-9.57z"/></svg>
+                        </div>
+                        <div class="flex-col" style="line-height: 1.1;">
+                            <span style="font-size:0.55rem; color:#86efac; font-weight:900; letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap;">REQUEST MATERI LAIN?</span>
+                            <span style="font-size:0.85rem; font-weight:800; color: white; white-space: nowrap;">Hubungi Admin Mafia Quiz</span>
+                        </div>
+                    </div>
+                </a>
+                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.55rem; font-weight: 900; color: var(--accent); letter-spacing: 5px; opacity: 0.4;">MAFIA QUIZ PREMIUM INTERACTIVE ASSET</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div id="resultModal" class="modal-overlay hidden">
+        <div class="glass modal-content" style="padding: 2.5rem 2rem;">
+            <div style="text-align: center; margin-bottom: 1rem;">
+               
+                   <span style="background: var(--accent); color: black; padding: 4px 12px; border-radius: 6px; font-weight: 900; font-size: 0.7rem; letter-spacing: 2.5px;">MAFIA QUIZ</span>
+               
+            </div>
+            <h2 style="font-size:1.75rem; text-align:center; margin-bottom:0.25rem; font-weight: 900; color: white; letter-spacing: -0.5px;">HASIL EVALUASI</h2>
+            <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:2rem; font-weight: 600;">Level 5-Simulasi 2</p>
+            
+            <div class="flex gap-3 mb-6">
+                <div style="flex:1.2; background:rgba(15,23,42,0.8); padding:1.5rem 1rem; border-radius:1rem; text-align:center; border: 2px solid var(--primary); box-shadow: 0 8px 20px rgba(0,0,0,0.4);">
+                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 0.25rem;">SKOR AKHIR</div>
+                    <div id="finalScore" style="font-size:3rem; font-weight:900; color:var(--primary); line-height: 1; text-shadow: 0 0 15px var(--primary);">0</div>
+                </div>
+                <div style="flex:1; background:rgba(15,23,42,0.8); padding:1.5rem 1rem; border-radius:1rem; text-align:center; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">
+                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 0.25rem;">STATUS</div>
+                    <div id="finalPred" style="font-size:1rem; font-weight:900; color:white; line-height: 1.2;">-</div>
+                </div>
+            </div>
+
+            <div style="font-size:0.9rem; margin-bottom:2rem; background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);">
+                <div class="flex justify-between py-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="color:var(--text-muted); font-weight: 700;">Jawaban Benar</span> <b id="resCorrect" style="color:var(--success); font-size: 1.1rem;">0</b>
+                </div>
+                <div class="flex justify-between py-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="color:var(--text-muted); font-weight: 700;">Jawaban Salah</span> <b id="resWrong" style="color:var(--danger); font-size: 1.1rem;">0</b>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span style="color:var(--text-muted); font-weight: 700;">Poin Esai</span> <b id="resEssay" style="color:#60a5fa; font-size: 1.1rem;">0</b>
+                </div>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="location.reload()" class="btn btn-nav" style="flex:1; font-weight: 900; padding: 1rem; border-radius: 12px;">COBA LAGI</button>
+                <button id="btnShareApp" class="btn btn-primary" style="flex:1.5; font-weight: 900; gap: 10px; padding: 1rem; border-radius: 12px; font-size: 1rem;">
+                   BAGIKAN HASIL <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                </button>
+            </div>
+            
+            <a href="https://wa.me/6285643573687?text=Halo%20Mafia%20Quiz%2C%20saya%20baru%20saja%20menyelesaikan%20kuis%20%22SIAP%20LIBAS%20ASPD%20DIY%20SD%22%20dan%20ingin%20memesan%20kuis%20serupa." target="_blank" rel="noopener noreferrer" class="btn btn-success" style="width:100%; margin-top: 15px; font-size: 0.95rem; border: 1px solid #4ade80; font-weight: 900; padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                PESAN KUIS SERUPA @ MAFIA QUIZ
+            </a>
+            <div style="margin-top: 2rem; text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; letter-spacing: 2px; opacity: 0.4;">
+              &copy; 2026 MAFIA QUIZ - PREMIUM INTERACTIVE ASSET
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+        
+    const quizData = [{"id":1,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#6c5ce7;'>[LITERASI MEMBACA]</strong><br><p>Anak <b>laki-laki</b> itu sedang membantu ayahnya mengangkat dagangan yang akan dijajakan di pinggir jalan.</p><div style='background:#f1f2f6; padding:10px; border-radius:8px; margin:10px 0; font-size:0.95em;'><b>Pilihan Kata:</b><br>(1) Pria<br>(2) Cowok<br>(3) Perempuan<br>(4) Bapak-bapak</div><strong style='font-size:1.1em; color:#000;'>Sinonim dari kata bercetak tebal adalah...</strong></div>","options":{"A":"(1) dan (2)","B":"(1) dan (3)","C":"(2) dan (3)","D":"(3) dan (4)"},"answer":"A","explanation":"Sinonim 'laki-laki' adalah 'pria' (baku) atau 'cowok' (ragam percakapan). Keduanya memiliki makna gender yang sama."},{"id":2,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Pembuatan garam tradisional dilakukan dengan mempersiapkan lahan luas untuk menampung air laut saat pasang. Langkah selanjutnya adalah memanfaatkan panas matahari untuk menjemur air laut hingga menguap dan menyisakan kristal garam.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Bagaimana proses pembuatan garam?</strong></div>","options":{"A":"Menampung air laut di bak","B":"Mengalirkan air laut ke bak penampungan","C":"Menjemur air laut dan menjemur di bawah panas matahari","D":"Menampung air laut dan menjemur di bawah terik matahari"},"answer":"D","explanation":"Sesuai teks: menampung air laut dan memanfaatkan panas matahari (menjemur) hingga menguap."},{"id":3,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Pupuk organik merupakan jenis pupuk yang berasal dari sisa-sisa makhluk hidup. Pupuk organik ini berasal dari kotoran hewan. Selain itu, kotoran manusia juga bisa dibuat menjadi pupuk jenis ini. Sisa-sisa tanaman juga bisa digunakan untuk membuat pupuk organik.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Kalimat utama pada paragraf tersebut adalah...</strong></div>","options":{"A":"Pupuk organik ini berasal dari kotoran hewan","B":"Selain itu, kotoran manusia juga bisa dibuat menjadi pupuk jenis ini","C":"Sisa-sisa tanaman juga bisa digunakan untuk membuat pupuk organik","D":"Pupuk organik merupakan jenis pupuk yang berasal dari sisa-sisa makhluk hidup"},"answer":"D","explanation":"Kalimat pertama adalah kalimat utama yang bersifat umum, kalimat lainnya adalah penjelas (contoh sumber pupuk)."},{"id":4,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Malioboro merupakan ikon Kota Yogyakarta yang memiliki daya pikat luar biasa. Wisatawan mengenalnya sebagai surga belanja. Di sepanjang jalan terdapat jalur pedestrian dengan bangku santai. Selain itu, terdapat wisata kuliner dengan harga terjangkau.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Ringkasan yang tepat pada paragraf tersebut adalah...</strong></div>","options":{"A":"Malioboro merupakan satu-satunya tempat wisata Kota Yogyakarta","B":"Wisata alam di Yogyakarta menjadi tujuan favorit para wisatawan","C":"Daya pikat Malioboro tempat belanja, tempat pedestrian, dan wisata kuliner","D":"Destinasi wisata di Yogyakarta meliputi wisata alam, kuliner, dan budaya"},"answer":"C","explanation":"Ringkasan mencakup poin utama: daya pikat Malioboro (belanja, pedestrian, kuliner)."},{"id":5,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Pada era globalisasi, bahasa Inggris penting dikuasai. Data Badan Statistika 2023 menunjukkan bahasa Inggris menempati peringkat satu dengan 1,5 miliar pembicara. Menguasai bahasa Inggris memiliki keuntungan untuk berkomunikasi secara luas.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Jenis paragraf tersebut adalah...</strong></div>","options":{"A":"argumentasi","B":"eksposisi","C":"deskripsi","D":"persuasi"},"answer":"B","explanation":"Paragraf Eksposisi memaparkan informasi/pengetahuan berdasarkan fakta/data (Data Statistik) untuk menambah wawasan pembaca."},{"id":6,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Leon menghampiri rumah Dido. Dido mengajak lewat selokan, tapi Leon menolak. Akhirnya mereka sepakat bersepeda melewati persawahan sambil melihat pemandangan indah.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Latar tempat pada cerita tersebut adalah...</strong></div>","options":{"A":"(1) Rumah Leon dan (2) Rumah Dido","B":"(1) Rumah Leon dan (4) Jalan area persawahan","C":"(2) Rumah Dido dan (3) Jalan pinggir selokan","D":"(2) Rumah Dido dan (4) Jalan area persawahan"},"answer":"D","explanation":"Leon datang ke 'Rumah Dido', lalu mereka bersepeda di 'Jalan area persawahan'."},{"id":7,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Musim dingin tiba. Belalang kelaparan meminta makan pada Semut. Awalnya Semut ragu, tetapi melihat Belalang lemas, Semut tidak tega dan memberikan makanannya.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Watak tokoh Semut adalah...</strong></div>","options":{"A":"malu","B":"kikir","C":"disiplin","D":"dermawan"},"answer":"D","explanation":"Dermawan berarti murah hati/suka memberi. Semut rela berbagi makanan meski awalnya ragu."},{"id":8,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Dinda berjualan donat di sekolah. Setiap malam ia membantu ibunya membuat donat. Walau lelah, ia tetap belajar dan bersyukur. Saat ini pun Dinda menjadi anak yang berprestasi di sekolah.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Akhir cerita tersebut adalah...</strong></div>","options":{"A":"Dinda berprestasi di sekolah","B":"Dinda kelelahan membuat donat","C":"Dinda membawa donat ke sekolah","D":"Dinda setiap malam membuat donat"},"answer":"A","explanation":"Cerita berakhir bahagia (happy ending) dimana kerja keras Dinda membuahkan hasil (berprestasi)."},{"id":9,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Ziva membangun usaha donat dari nol. Semakin lama usahanya semakin berkembang. Berkat <b>(.....)</b> Ziva, kini usahanya semakin sukses.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Ungkapan yang sesuai adalah...</strong></div>","options":{"A":"Tangan kanan","B":"Tangan dingin","C":"Darah dingin","D":"Darah biru"},"answer":"B","explanation":"'Tangan dingin' adalah ungkapan untuk orang yang selalu berhasil dalam usaha/karyanya."},{"id":10,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>(1) Siang itu udara terasa panas.<br>(2) Jus mangga itu sangat dingin.<br>(3) Fira membuat segelas jus mangga.<br>(4) Setelah minum jus, tiba-tiba Fira merasa pusing.<br>(5) Fira teringat jika udara panas sebaiknya tidak minum minuman dingin.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Susunan kalimat agar menjadi paragraf narasi yang padu adalah...</strong></div>","options":{"A":"(1), (3), (2), (5), (4)","B":"(1), (3), (2), (4), (5)","C":"(3), (1), (2), (4), (5)","D":"(3), (4), (1), (2), (5)"},"answer":"B","explanation":"Urutan logis: Panas (1) -> Buat Jus (3) -> Jus Dingin (2) -> Minum & Pusing (4) -> Hikmah/Ingatan (5)."},{"id":11,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[LITERASI NUMERASI]</strong><br><b>Tarif Parkir Mobil:</b><br>• 1 jam pertama: Rp5.000<br>• Jam berikutnya: Rp5.000<br><i>*Kurang dari 1 jam dihitung 1 jam</i><br><br>Rika parkir pukul 12.15 dan keluar pukul 15.20 WIB.<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Biaya parkir yang dibayarkan adalah...</strong></div>","options":{"A":"Rp5.000,00","B":"Rp20.000,00","C":"Rp25.000,00","D":"Rp30.000,00"},"answer":"B","explanation":"Durasi: 3 jam 5 menit. Dihitung 4 jam. Biaya = 4 x Rp5.000 = Rp20.000."},{"id":12,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[JARING-JARING KUBUS]</strong><br>Indera membongkar kardus kubus (pola salib). Luas dua sisi berwarna biru adalah 392 cm².<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Volume kardus tersebut adalah...</strong></div>","options":{"A":"2.744 cm³","B":"196 cm³","C":"98 cm³","D":"3.474 cm³"},"answer":"A","explanation":"Luas 2 sisi = 392. Luas 1 sisi = 196. Rusuk = akar(196) = 14 cm. Volume = 14 x 14 x 14 = 2.744 cm³."},{"id":13,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[JADWAL BIMBEL]</strong><br>• Ekslusif (tiap 2 hari) - Mulai 16 Feb<br>• Cerdas (tiap 3 hari) - Mulai 14 Feb<br>• Minggu (tiap Minggu) - Mulai 11 Feb<br><br><b>Pernyataan:</b><br>I. Program Ekslusif masuk ke-6 kali bersamaan dengan Cerdas masuk ke-5 kali.<br>IV. Ketiga program masuk bersama kedua kalinya tanggal 14 April.<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Pernyataan yang benar adalah...</strong></div>","options":{"A":"I dan IV","B":"I dan III","C":"II dan IV","D":"II dan III"},"answer":"A","explanation":"Ekslusif ke-6 (hari ke-10 dari start) = 26 Feb. Cerdas ke-5 (hari ke-12 dari start) = 26 Feb. (I Benar). KPK dan jadwal mendukung opsi A."},{"id":14,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[PEMBAGIAN BIBIT]</strong><br>Bibit tersedia:<br>• Jeruk 100 (rusak 4) -> Sisa 96<br>• Mangga 110 (rusak 2) -> Sisa 108<br>• Rambutan 82 (rusak 10) -> Sisa 72<br>Dibagikan ke sebanyak-banyaknya sekolah (FPB).<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Pernyataan yang benar adalah...</strong></div>","options":{"A":"Banyak sekolah penerima adalah 24","B":"Total bibit yang dibagikan adalah 276 pot","C":"Setiap sekolah terima 8 jeruk, 9 mangga, 5 rambutan","D":"Jumlah bibit per sekolah 25 pot"},"answer":"B","explanation":"Total bibit layak = 96 + 108 + 72 = 276. (Opsi B Benar). FPB dari 96, 108, 72 adalah 12 sekolah."},{"id":15,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[DURASI UJIAN]</strong><br>• Bhs Jawa: 07.15 - 08.45<br>• PKn: 09.00 - 10.30<br>• Seni: 11.00 - 12.00<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Total waktu mengerjakan soal adalah ... menit.</strong></div>","options":{"A":"210","B":"240","C":"300","D":"360"},"answer":"B","explanation":"Bhs Jawa (90 m) + PKn (90 m) + Seni (60 m) = 240 menit."},{"id":16,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[RESEP KUE]</strong><br>• Resep Nastar (jadi 2kg): Butuh 0,5 kg terigu<br>• Resep Putri Salju (jadi 1kg): Butuh 450 gram terigu<br><br>Bu Jenny membuat <b>4 kg Nastar</b> dan <b>3 kg Putri Salju</b>.<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Total tepung terigu yang dibutuhkan adalah...</strong></div>","options":{"A":"3,35 kg","B":"3 kg","C":"2,55 kg","D":"2,35 kg"},"answer":"D","explanation":"Nastar (4kg = 2x resep) = 2 x 0,5 = 1 kg. Putri Salju (3kg = 3x resep) = 3 x 0,45 = 1,35 kg. Total = 2,35 kg."},{"id":17,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Uang Anika : Bisma : Cinta = 5 : 4 : 6. Total Rp900.000.<br>Masing-masing mendapat tambahan THR Rp50.000.</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Perbandingan uang mereka sekarang adalah...</strong></div>","options":{"A":"35 : 29 : 41","B":"6 : 5 : 7","C":"25 : 19 : 31","D":"8 : 7 : 9"},"answer":"A","explanation":"Total 15 bagian = 900rb -> 1 bagian = 60rb. Awal: A(300), B(240), C(360). Akhir (+50): A(350), B(290), C(410). Rasio 35:29:41."},{"id":18,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[KECEPATAN & WAKTU]</strong><br>• Nala (Jalan): 0,6 km, 3 km/jam. Berangkat 14.30.<br>• Gina (Sepeda): 2 km, 15 km/jam. Sampai 14.50.<br>• Dikma (Motor): 3,2 km, 64 km/jam. Berangkat 14.47.<br><i>(Jarak disesuaikan dengan posisi di denah)</i><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Pernyataan yang benar:</strong><br>I. Nala sampai pertama (Salah, Nala 14.42, Gina 14.50, Dikma 14.50). *Koreksi: Nala 14.42 paling awal.*<br>III. Gina dan Dikma sampai bersamaan (Benar, 14.50).</div>","options":{"A":"II dan III","B":"II dan IV","C":"I dan IV","D":"I dan III"},"answer":"D","explanation":"Nala tiba 14.42. Gina tiba 14.50. Dikma tiba 14.50. Pernyataan I (Nala pertama) dan III (Gina-Dikma bersamaan) adalah Benar."},{"id":19,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#0984e3;'>[LUAS LINGKARAN]</strong><br>Fael membuat karya lingkaran (Diameter 40 cm).<br>Bagian Hijau = 3 bagian dari 8 bagian.<br>Bagian Putih (Tidak ditempel) = 5 bagian dari 8 bagian.<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Luas bagian yang tidak ditempeli kertas hijau adalah...</strong></div>","options":{"A":"157 cm²","B":"471 cm²","C":"785 cm²","D":"1.256 cm²"},"answer":"C","explanation":"Luas total = 3,14 x 20 x 20 = 1.256 cm². Bagian putih = 5/8 x 1.256 = 785 cm²."},{"id":20,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Nindy menyambung 3 pita (2,75 m; 1,9 m; 1,87 m) untuk teras 5 m. Setiap sambungan mengurangi panjang pita sebesar 0,36 m (2 ujung x 0,18m).</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Kelebihan panjang pita adalah...</strong></div>","options":{"A":"616 cm","B":"80 cm","C":"580 cm","D":"116 cm"},"answer":"B","explanation":"Total pita = 6,52 m. Hilang sambungan (2 sambungan) = 2 x 0,36 = 0,72 m. Sisa = 5,80 m. Kelebihan = 5,80 - 5,00 = 0,80 m = 80 cm."},{"id":21,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#27ae60;'>[LITERASI SAINS]</strong><br>Minyak bumi dimanfaatkan sebagai bahan bakar (kompor). Gambar menunjukkan kompor minyak tanah.<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Sumber daya alam olahan minyak bumi untuk alat tersebut adalah...</strong></div>","options":{"A":"Avtur","B":"Vaselin","C":"Kerosin","D":"Paraffin"},"answer":"C","explanation":"Kerosin adalah nama lain dari minyak tanah, bahan bakar untuk kompor minyak."},{"id":22,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#27ae60;'>[BUNYI SERULING]</strong><br>Urutan nada dari terendah ke tertinggi ditentukan oleh banyaknya lubang yang ditutup.<br><i>(Makin banyak ditutup = makin rendah)</i><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Urutan nada terendah ke tertinggi yang benar adalah...</strong></div>","options":{"A":"1, 5, 2, 4, 3","B":"3, 4, 2, 5, 1","C":"4, 3, 2, 5, 1","D":"5, 1, 2, 4, 3"},"answer":"B","explanation":"Gambar 3 (semua tutup) -> Rendah. Gambar 1 (semua buka) -> Tinggi. Urutan: 3-4-2-5-1."},{"id":23,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Pak Dody mengalami radang tenggorokan (suara serak, sakit menelan).</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Upaya yang tepat untuk kesembuhan/pencegahan adalah...</strong></div>","options":{"A":"Menghindari asap rokok dan makan zat besi","B":"Menggunakan masker dan kurangi lemak","C":"Menjaga kebersihan rumah dan menghindari paparan asap rokok","D":"Istirahat dan kurangi pengawet"},"answer":"C","explanation":"Menghindari iritan seperti asap rokok dan debu (kebersihan) sangat penting untuk radang tenggorokan."},{"id":24,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#27ae60;'>[ANATOMI MATA]</strong><br>Gambar penampang mata. Menanyakan fungsi bagian nomor 5 (Iris/Pupil).<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Fungsi bagian nomor 5 adalah...</strong></div>","options":{"A":"Mengatur banyak sedikitnya cahaya yang masuk ke mata","B":"Menerima cahaya dan memfokuskan","C":"Memberi warna mata","D":"Membentuk bayangan"},"answer":"A","explanation":"Pupil (lubang di tengah iris) berfungsi sebagai jalan masuk cahaya, ukurannya diatur oleh iris."},{"id":25,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Daftar Tumbuhan:<br>(1) Putri malu (Duri)<br>(2) Talas (Lilin)<br>(3) Kaktus (Duri)<br>(4) Jeruk (Duri)<br>(5) Pandan (Duri)</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Tumbuhan dengan kesamaan cara adaptasi (memiliki duri) adalah...</strong></div>","options":{"A":"1, 3, dan 4","B":"2, 4, dan 5","C":"1, 4, dan 5","D":"2, 3, dan 4"},"answer":"C","explanation":"Putri malu, Jeruk, dan Pandan memiliki duri pada batang/daun untuk perlindungan diri."},{"id":26,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Daftar Hewan:<br>(1) Buaya (Paru-paru)<br>(2) Kalajengking (Paru-paru buku)<br>(3) Kelelawar (Paru-paru)<br>(4) Laba-laba (Paru-paru buku)<br>(5) Lebah (Trakea)</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Hewan yang memiliki alat pernapasan sama adalah...</strong></div>","options":{"A":"1 dan 5","B":"2 dan 4","C":"3 dan 4","D":"1 dan 5"},"answer":"B","explanation":"Kalajengking dan Laba-laba sama-sama bernapas menggunakan paru-paru buku."},{"id":27,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#27ae60;'>[PENCERNAAN]</strong><br>Gambar organ lambung (No 4).<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Fungsi bagian nomor 4 adalah...</strong></div>","options":{"A":"Mengendapkan protein susu","B":"Mengasamkan makanan","C":"Mengubah zat tepung","D":"Mengendapkan protein susu menjadi kasein dan memecah protein menjadi pepton"},"answer":"D","explanation":"Di lambung terdapat enzim Renin (mengendapkan kasein) dan Pepsin (memecah protein)."},{"id":28,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#27ae60;'>[PEREDARAN DARAH]</strong><br>Nomor 10: Arteri Pulmonalis (ke paru-paru).<br>Nomor 4: Bilik Kiri (ke seluruh tubuh).<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Fungsi bagian nomor 10 dan 4 secara urut adalah...</strong></div>","options":{"A":"Membawa darah dari bilik kanan ke paru-paru... dan menerima darah dari serambi kiri","B":"Memompa darah kotor ke paru-paru dan memompa darah kaya oksigen","C":"Membawa darah dari bilik kanan ke serambi kiri","D":"Membawa darah dari bilik kiri ke seluruh tubuh"},"answer":"A","explanation":"No 10 mengalirkan darah CO2 dari jantung ke paru-paru. No 4 (Bilik Kiri) memompa darah bersih (yang diterima dari serambi kiri) ke tubuh."},{"id":29,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><p>Akibat Bulan mengelilingi Bumi (Revolusi Bulan) selama 29,5 hari:<br>(2) Gerhana<br>(4) Pasang Surut<br>(5) Fase Bulan</p><hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Pernyataan yang benar adalah...</strong></div>","options":{"A":"1, 2, dan 5","B":"2, 3, dan 4","C":"2, 4, dan 5","D":"1, 4, dan 5"},"answer":"C","explanation":"Revolusi bulan menyebabkan fase bulan, pasang surut air laut, dan gerhana."},{"id":30,"type":"pg","question":"<div style='background:#ffffff; color:#2d3436; padding:20px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-family: sans-serif;'><strong style='color:#27ae60;'>[BAGIAN TELINGA]</strong><br>• Koklea (4) -> Saraf ke otak (P)<br>• Saluran Eustachius (5) -> Ke Faring (Q)<br>• Saluran Gelung (3) -> Keseimbangan (S)<br>• Tulang Pendengaran (6) -> Teruskan getaran (R)<hr style='border:0; border-top:1px dashed #ccc; margin:15px 0;'><strong style='font-size:1.1em; color:#000;'>Pasangan yang tepat adalah...</strong></div>","options":{"A":"4-Q; 5-S; 1-R; 2-P","B":"1-R; 4-Q; 3-S; 6-P","C":"4-P; 5-Q; 3-S; 6-R","D":"1-Q; 5-R; 6-P; 7-S"},"answer":"C","explanation":"4 (Rumah Siput/Koklea) mengubah getaran jadi impuls saraf (P). 5 (Eustachius) menyeimbangkan tekanan (Q). 3 (Saluran ½ lingkaran) keseimbangan (S)."}];
+    let idx = 0;
+    let answers = {};
+    let time = 7200;
+    let timerInt;
+    let isShuffled = false;
+    const els = {};
+
+        
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    
+    function showFb(txt) {
+        els.txt.fb.innerHTML = txt;
+        els.box.fb.classList.remove('hidden');
+    }
+
+    function toggleMap() {
+        els.scr.map.classList.toggle('hidden');
+        renderMap();
+    }
+
+        
+    function renderQ() {
+        const d = quizData[idx];
+        const saved = answers[d.id];
+        
+        const card = document.getElementById('questionCard');
+        if(card) {
+            card.style.animation = 'none';
+            card.offsetHeight;
+            card.style.animation = 'fadein 0.3s ease-out';
+        }
+
+        els.box.content.innerHTML = '';
+        els.box.fb.classList.add('hidden');
+        els.txt.qNum.innerText = (idx+1) + ' / ' + quizData.length;
+        
+        // Handle Image
+        let imgHTML = '';
+        if(d.image) {
+            imgHTML = '<div style="margin-bottom:1.5rem; border-radius:1rem; overflow:hidden; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">' +
+                      '<img src="' + d.image + '" style="width:100%; height:auto; display:block; max-height:400px; object-fit:contain; margin:0 auto;" alt="Visual Soal">' +
+                      '</div>';
+        }
+        els.txt.qText.innerHTML = imgHTML + d.question;
+        
+        const badge = document.getElementById('qTypeBadge');
+        if(d.type === 'pg') { badge.className = 'badge badge-pg'; badge.innerText = 'Pilihan Ganda'; }
+        else if(d.type === 'pg-complex') { badge.className = 'badge badge-complex'; badge.innerText = 'Pilihan Ganda Kompleks'; }
+        else if(d.type === 'match') { badge.className = 'badge badge-match'; badge.innerText = 'Menjodohkan'; }
+        else { badge.className = 'badge badge-mix'; badge.innerText = 'Uraian'; }
+
+        if(d.type === 'pg') renderPG(d, saved);
+        else if(d.type === 'pg-complex') renderPGComplex(d, saved);
+        else if(d.type === 'match') renderMatch(d, saved);
+        else renderText(d, saved);
+
+        els.btns.prev.disabled = idx === 0;
+        if(idx === quizData.length-1) {
+            els.btns.next.classList.add('hidden');
+            els.btns.fin.classList.remove('hidden');
+        } else {
+            els.btns.next.classList.remove('hidden');
+            els.btns.fin.classList.add('hidden');
+        }
+
+        els.bar.style.width = ((idx+1)/quizData.length)*100 + '%';
+        els.txt.ansCount.innerText = Object.keys(answers).length;
+        renderMap();
+    }
+
+    function renderMap() {
+        els.box.map.innerHTML = '';
+        quizData.forEach((q, i) => {
+            const b = document.createElement('button');
+            b.className = 'map-btn ' + (i===idx ? 'active ' : '') + (answers[q.id] ? 'answered' : '');
+            b.innerText = i+1;
+            b.onclick = () => { idx = i; renderQ(); els.scr.map.classList.add('hidden'); };
+            els.box.map.appendChild(b);
+        });
+    }
+
+    function renderPG(d, s) {
+        Object.entries(d.options || {}).forEach(([k,v]) => {
+            const b = document.createElement('button');
+            b.className = 'btn-option';
+            b.style.padding = '1.1rem';
+            b.style.borderRadius = '1rem';
+            let icon = '';
+            
+            if(s) {
+                if(k == d.answer) { b.classList.add('correct'); icon = '✓'; }
+                else if(s.val == k && k != d.answer) { b.classList.add('wrong'); icon = '✕'; }
+            } else {
+                b.onclick = () => { answers[d.id] = { val: k, score: k==d.answer ? 1 : 0 }; renderQ(); };
+            }
+            
+            b.innerHTML = '<b class="option-icon" style="width:24px; height:24px;">' + k + '</b> <span style="flex:1" dir="auto">' + v + '</span> <b>' + icon + '</b>';
+            els.box.content.appendChild(b);
+        });
+        if(s) showFb(d.explanation);
+    }
+
+    function renderPGComplex(d, s) {
+        let currentVal = (s && s.val) ? s.val : (answers[d.id] ? answers[d.id].val : []);
+        if(!Array.isArray(currentVal)) currentVal = [];
+
+        Object.entries(d.options || {}).forEach(([k,v]) => {
+            const b = document.createElement('button');
+            b.className = 'btn-option checkbox';
+            b.style.padding = '1.1rem';
+            b.style.borderRadius = '1rem';
+            let icon = '';
+            
+            if(s && s.score !== undefined) {
+                const isSelected = currentVal.includes(k);
+                const isCorrectKey = d.answer.includes(k);
+                if(isCorrectKey) { 
+                    b.classList.add('correct'); icon = '✓'; 
+                    if(!isSelected) b.classList.add('missed');
+                } else if (isSelected && !isCorrectKey) {
+                    b.classList.add('wrong'); icon = '✕';
+                } else if (isSelected) b.classList.add('correct');
+            } else {
+                if(currentVal.includes(k)) { b.style.borderColor = 'var(--primary)'; b.style.background = 'rgba(99, 102, 241, 0.2)'; }
+                b.onclick = () => {
+                    const newSet = currentVal.includes(k) ? currentVal.filter(x => x !== k) : [...currentVal, k];
+                    answers[d.id] = { val: newSet }; renderQ(); 
+                };
+            }
+            const boxContent = currentVal.includes(k) ? '✓' : k;
+            b.innerHTML = '<b class="option-icon" style="width:24px; height:24px; border-radius: 6px;">' + boxContent + '</b> <span style="flex:1" dir="auto">' + v + '</span> <b>' + icon + '</b>';
+            els.box.content.appendChild(b);
+        });
+
+        if(!s || s.score === undefined) {
+             const btn = document.createElement('button');
+             btn.className = 'btn btn-primary'; btn.innerText = 'KONFIRMASI JAWABAN'; btn.style.marginTop = '1rem';
+             btn.style.padding = '1rem'; btn.style.borderRadius = '1rem';
+             btn.onclick = () => {
+                 const currentVal = answers[d.id]?.val || [];
+                 if(currentVal.length === 0) return alert('Pilih minimal satu jawaban!');
+                 const sortedKey = [...d.answer].sort();
+                 const sortedUser = [...currentVal].sort();
+                 const isCorrect = JSON.stringify(sortedKey) === JSON.stringify(sortedUser);
+                 answers[d.id] = { val: currentVal, score: isCorrect ? 1 : 0 }; renderQ();
+             };
+             els.box.content.appendChild(btn);
+        } else { showFb(d.explanation); }
+    }
+
+    function renderMatch(d, s) {
+        let opts = (d.items || []).map(i => i.m);
+        if(!s) opts.sort(() => Math.random() - 0.5); 
+
+        (d.items || []).forEach((item, i) => {
+            const row = document.createElement('div'); row.className = 'match-row';
+            row.style.borderRadius = '1rem'; row.style.padding = '1rem';
+            let inner = '<div style="font-size:0.95rem; margin-bottom:0.5rem; font-weight:700;" dir="auto">' + (i+1) + '. ' + item.t + '</div>';
+            
+            if(s) {
+                const userVal = s.pairs[i]; const correct = userVal === item.m; const color = correct ? 'var(--success)' : 'var(--danger)';
+                inner += '<div style="border:1px solid ' + color + '; color:' + color + '; padding:0.75rem; border-radius:0.75rem; font-size:0.9rem; font-weight:700;">Jawaban: ' + (userVal || '-') + ' ' + (correct ? '✓' : '✕') + '</div>';
+                if(!correct) inner += '<div style="font-size:0.8rem; color:var(--success); margin-top:5px; font-weight:600;">Kunci: ' + item.m + '</div>';
+            } else {
+                inner += '<select id="match_' + i + '" style="border-radius:0.75rem; padding:0.75rem;"><option value="" disabled selected>Pilih Pasangan...</option>';
+                opts.forEach(o => inner += '<option value="' + o + '">' + o + '</option>');
+                inner += '</select>';
+            }
+            row.innerHTML = inner; els.box.content.appendChild(row);
+        });
+
+        if(!s) {
+            const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.innerText = 'KUNCI PASANGAN'; btn.style.marginTop = '1rem';
+            btn.style.padding = '1rem'; btn.style.borderRadius = '1rem';
+            btn.onclick = () => {
+                let pairs = {}; let correctCount = 0; let filled = true;
+                (d.items || []).forEach((item, i) => {
+                    const val = document.getElementById('match_' + i).value;
+                    if(!val) filled = false; pairs[i] = val; if(val === item.m) correctCount++;
+                });
+                if(!filled) return alert('Lengkapi semua pasangan!');
+                answers[d.id] = { pairs: pairs, score: correctCount/(d.items || []).length }; renderQ();
+            };
+            els.box.content.appendChild(btn);
+        } else { showFb(d.explanation); }
+    }
+
+    function renderText(d, s) {
+        if(!s) {
+            const txt = document.createElement('textarea'); txt.id = 'essay_input_' + d.id; txt.rows = 4; txt.placeholder = 'Ketik jawaban Anda di sini...'; txt.dir = "auto";
+            txt.style.borderRadius = '1rem'; txt.style.padding = '1rem';
+            const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.innerText = 'LIHAT KUNCI'; btn.style.marginTop = '1rem';
+            btn.style.padding = '1rem'; btn.style.borderRadius = '1rem';
+            btn.onclick = () => {
+                const t = document.getElementById('essay_input_' + d.id); if(!t.value.trim()) return alert('Tuliskan jawaban terlebih dahulu!');
+                t.disabled = true; btn.classList.add('hidden'); document.getElementById('selfEval').classList.remove('hidden');
+            };
+            els.box.content.append(txt, btn);
+
+            const evalDiv = document.createElement('div'); evalDiv.id = 'selfEval'; evalDiv.className = 'hidden';
+            let h = '<div style="background:rgba(0,0,0,0.5); padding:1.25rem; border-radius:1rem; border:2px solid var(--success); margin-top:1rem;"><b style="color:var(--success); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:0.5rem;">KUNCI JAWABAN:</b><div style="font-size:1rem; color:white; font-weight:700;" dir="auto">' + d.answer + '</div></div>';
+            h += '<div style="text-align:center; margin-top:1rem; font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Evaluasi Jawaban Anda:</div>';
+            h += '<div class="flex gap-3 mt-3">';
+            h += '<button class="btn" style="flex:1; background:rgba(239,68,68,0.15); border:1px solid var(--danger); font-size:0.8rem; border-radius:1rem; padding:0.8rem;" onclick="rate(' + d.id + ', 0)">SALAH</button>';
+            h += '<button class="btn" style="flex:1; background:rgba(245,158,11,0.15); border:1px solid var(--warning); font-size:0.8rem; border-radius:1rem; padding:0.8rem;" onclick="rate(' + d.id + ', 0.5)">MIRIP</button>';
+            h += '<button class="btn" style="flex:1; background:rgba(16,185,129,0.15); border:1px solid var(--success); font-size:0.8rem; border-radius:1rem; padding:0.8rem;" onclick="rate(' + d.id + ', 1)">BENAR</button>';
+            h += '</div>';
+            evalDiv.innerHTML = h;
+            
+            window.rate = (id, sc) => { const t = document.getElementById('essay_input_' + id); answers[id] = { ans: t ? t.value : '-', score: sc }; renderQ(); };
+            els.box.content.appendChild(evalDiv);
+        } else {
+            els.box.content.innerHTML = '<div style="background:rgba(15,23,42,0.8); padding:1rem; border-radius:1rem; margin-bottom:1rem; font-style:italic; font-size:0.95rem; border:1px solid rgba(255,255,255,0.05);" dir="auto">"' + s.ans + '"</div><div style="text-align:center; padding:0.75rem; border:2px solid ' + (s.score==1? 'var(--success)' : (s.score==0.5?'var(--warning)':'var(--danger)')) + '; border-radius:0.75rem; font-weight:900; background:rgba(0,0,0,0.2);">NILAI MANDIRI: ' + s.score + '</div><div style="margin-top:1rem; font-size:0.9rem; background:rgba(255,255,255,0.02); padding:1rem; border-radius:1rem;"><b style="color:var(--success); text-transform:uppercase; font-size:0.7rem; display:block; margin-bottom:0.25rem;">Kunci:</b> <div style="font-weight:700; color:white;" dir="auto">' + d.answer + '</div></div>';
+            showFb(d.explanation);
+        }
+    }
+
+        
+    function startQuiz() {
+        try {
+            if(els.scr.start) els.scr.start.classList.add('hidden');
+            if(els.scr.app) { els.scr.app.classList.remove('hidden'); els.scr.app.classList.add('flex'); }
+            renderQ();
+            if(time > 0) timerInt = setInterval(tick, 1000);
+        } catch(e) {
+            console.error("Error starting quiz:", e);
+            document.getElementById('startModal').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            renderQ();
+        }
+    }
+
+    function tick() {
+        time--;
+        const h = Math.floor(time/3600).toString().padStart(2,'0');
+        const m = Math.floor((time%3600)/60).toString().padStart(2,'0');
+        const s = (time%60).toString().padStart(2,'0');
+        if(els.txt.timer) els.txt.timer.innerText = h + ':' + m + ':' + s;
+        if(time<=0) finishQuiz();
+    }
+    
+    function nextQ() { if(idx < quizData.length-1) { idx++; renderQ(); } }
+    function prevQ() { if(idx > 0) { idx--; renderQ(); } }
+
+    function finishQuiz() {
+        clearInterval(timerInt);
+        let sc = 0; let cor = 0; let wr = 0; let oth = 0;
+        
+        quizData.forEach(q => {
+            const a = answers[q.id];
+            if(a) {
+                sc += (a.score || 0);
+                if(q.type === 'pg' || q.type === 'pg-complex') { if(a.score === 1) cor++; else wr++; } 
+                else { oth += (a.score || 0); }
+            } else if(q.type === 'pg' || q.type === 'pg-complex') wr++;
+        });
+
+        const final = Math.round((sc / quizData.length) * 100);
+        document.getElementById('finalScore').innerText = final;
+        document.getElementById('finalPred').innerText = final >= 80 ? 'Sangat Baik' : (final >= 70 ? 'Baik' : 'Cukup');
+        document.getElementById('resCorrect').innerText = cor;
+        document.getElementById('resWrong').innerText = wr;
+        document.getElementById('resEssay').innerText = oth.toFixed(1);
+
+        els.scr.app.classList.add('hidden');
+        els.scr.res.classList.remove('hidden');
+        
+        for(let i=0; i<50; i++) {
+            const c = document.createElement('div'); c.className = 'confetti';
+            c.style.left = Math.random()*100 + 'vw'; c.style.backgroundColor = ['#f00','#0f0','#00f','#ff0'][Math.floor(Math.random()*4)];
+            c.style.animationDuration = (Math.random()*2+2) + 's'; document.body.appendChild(c);
+        }
+    }
+
+    async function drawScoreCard(score, grade, correct, wrong, title) {
+        const canvas = document.createElement('canvas'); canvas.width = 800; canvas.height = 400; const ctx = canvas.getContext('2d');
+        const grd = ctx.createLinearGradient(0,0, 800, 400);
+        grd.addColorStop(0, getComputedStyle(document.body).getPropertyValue('--bg-dark').trim() || '#0f172a'); grd.addColorStop(1, '#000000');
+        ctx.fillStyle = grd; ctx.fillRect(0,0, 800, 400);
+
+        ctx.beginPath(); ctx.arc(400, 140, 80, 0, 2 * Math.PI); ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fill();
+        ctx.lineWidth = 4; ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#6366f1'; ctx.stroke();
+
+        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+        ctx.font = 'bold 24px sans-serif'; ctx.fillText(title.substring(0,30) + (title.length>30?'...':''), 400, 40);
+        ctx.font = 'bold 80px sans-serif'; ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#6366f1'; ctx.fillText(score, 400, 165);
+        ctx.font = 'bold 30px sans-serif'; ctx.fillStyle = '#ffffff'; ctx.fillText(grade, 400, 260);
+        ctx.font = '20px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText('✅ Benar: ' + correct + '   ❌ Salah: ' + wrong, 400, 310);
+        
+        // Dynamic Branding Watermark
+        ctx.font = 'italic 16px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fillText('Powered by ' + brand + ' ' + footer, 400, 350);
+        ctx.font = 'bold 12px sans-serif'; ctx.fillText('Hubungi Kami: 6285643573687', 400, 375);
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    async function shareResult() {
+        const btn = els.btns.share; const originalText = btn.innerText; btn.innerText = 'WAIT...'; btn.disabled = true;
+        try {
+            let correct = 0; const score = document.getElementById('finalScore').innerText; const total = quizData.length; const grade = document.getElementById('finalPred').innerText;
+            Object.values(answers).forEach(a => { if(a.score === 1) correct++; });
+            
+            // Dynamic Branding prefix for sharing
+            const text = [ 
+                '🏆 *HASIL KUIS @ MAFIA QUIZ*', 
+                'Kuis: *SIAP LIBAS ASPD DIY SD*', 
+                '⭐ Skor: ' + score + ' (' + grade + ')', 
+                '✅ Benar: ' + correct + ' | ❌ Salah: ' + (total - correct), 
+                '', 
+                'Mau belajar dengan kuis lain? Pesan di Mafia Quiz:', 
+                'https://wa.me/6285643573687' 
+            ].join('\n');
+
+            const blob = await drawScoreCard(score, grade, correct, total-correct, 'SIAP LIBAS ASPD DIY SD');
+            const file = new File([blob], 'score.png', { type: 'image/png' });
+
+            // 1. Try System Share (Best for Mobile)
+            if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { 
+                await navigator.share({ files: [file], text: text }); 
+            } 
+            // 2. Try System Share Text Only
+            else if(navigator.share) { 
+                await navigator.share({ title: 'SIAP LIBAS ASPD DIY SD', text: text }); 
+            } 
+            // 3. Fallback: Open WhatsApp Directly + Clipboard
+            else {
+                navigator.clipboard.writeText(text);
+                const waUrl = "https://wa.me/?text=" + encodeURIComponent(text);
+                window.open(waUrl, '_blank');
+                alert('Teks hasil telah disalin! Silakan tempel di WhatsApp.');
+            }
+        } catch(err) {
+            console.log('Share failed', err);
+            // Last resort manual open
+            const score = document.getElementById('finalScore').innerText;
+            const waUrl = "https://wa.me/?text=" + encodeURIComponent('🏆 Skor Kuis Saya: ' + score + ' @ Mafia Quiz');
+            window.open(waUrl, '_blank');
+        } finally { btn.innerText = originalText; btn.disabled = false; }
+    }
+
+        
+    function init() {
+        els.scr = { start: document.getElementById('startModal'), app: document.getElementById('appContainer'), res: document.getElementById('resultModal'), map: document.getElementById('mapModal') };
+        els.txt = { qNum: document.getElementById('qNumber'), qText: document.getElementById('qText'), timer: document.getElementById('timerDisplay'), ansCount: document.getElementById('answeredCount'), fb: document.getElementById('feedbackText') };
+        els.box = { content: document.getElementById('qContent'), fb: document.getElementById('feedbackContainer'), map: document.getElementById('mapGrid') };
+        els.bar = document.getElementById('progressBar');
+        els.btns = { prev: document.getElementById('btnPrev'), next: document.getElementById('btnNext'), fin: document.getElementById('btnFinish'), start: document.getElementById('btnStartQuiz'), share: document.getElementById('btnShareApp') };
+
+        if(els.btns.start) { els.btns.start.onclick = startQuiz; } 
+        else { const btn = document.querySelector('button[onclick="startQuiz()"]'); if(btn) btn.onclick = startQuiz; }
+
+        if(els.btns.share) els.btns.share.onclick = shareResult;
+        if(isShuffled) shuffleArray(quizData);
+    }
+    window.onload = init;
+
+    </script>
+
+</body>
+</html>

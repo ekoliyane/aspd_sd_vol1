@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAFIA QUIZ - ASPD 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --primary: #2563eb; /* Biru Vercel */
+            --primary-hover: #1d4ed8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-purple: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* HEADER SECTION */
+        .header {
+            background: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            background: -webkit-linear-gradient(45deg, #2563eb, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            margin-top: 0.5rem;
+            color: var(--text-sub);
+            font-size: 1rem;
+        }
+
+        /* GRID CONTAINER */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* CARD STYLE */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: var(--primary);
+        }
+
+        /* Badge/Label di pojok kanan atas */
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .bg-blue { background: #dbeafe; color: #1e40af; }
+        .bg-green { background: #d1fae5; color: #065f46; }
+        .bg-yellow { background: #fef3c7; color: #92400e; }
+        .bg-purple { background: #ede9fe; color: #5b21b6; }
+        .bg-red { background: #fee2e2; color: #991b1b; }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            margin: 0 0 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        .btn-start {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .card:hover .btn-start {
+            background-color: var(--primary-hover);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-sub);
+            font-size: 0.875rem;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            margin-top: auto;
+        }
+
+        /* Responsif untuk HP */
+        @media (max-width: 640px) {
+            .header h1 { font-size: 1.75rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>MAFIA QUIZ ASPD</h1>
+        <p>Latihan Soal Interaktif & Strategi Tuntas</p>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            
+            <a href="level1.html" class="card">
+                <span class="badge bg-blue">Campuran</span>
+                <h3>Level 1: Prediksi Maret</h3>
+                <p>Paket DX158. Pemanasan dengan soal prediksi terbaru (B.Indo, Mat, IPA) lengkap dengan kunci jawaban.</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+            <a href="level2.html" class="card">
+                <span class="badge bg-green">Sains</span>
+                <h3>Level 2: Lab. Sains</h3>
+                <p>Paket P4 Sleman. Bedah tuntas materi IPA. Disertai pembahasan mendalam agar paham konsep.</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+            <a href="level3.html" class="card">
+                <span class="badge bg-yellow">Numerasi</span>
+                <h3>Level 3: Arena Logika</h3>
+                <p>Paket TO Propinsi. Latihan soal matematika HOTS dan logika. Siapkan kertas coret-coretanmu!</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+            <a href="level4.html" class="card">
+                <span class="badge bg-purple">B. Indo</span>
+                <h3>Level 4: Petualangan Bahasa</h3>
+                <p>Paket DX141. Fokus Literasi Membaca. Latihan teks panjang, ejaan, dan makna kata.</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+            <a href="level5.html" class="card">
+                <span class="badge bg-blue">Campuran</span>
+                <h3>Level 5: Serangan Februari</h3>
+                <p>Paket DX154. Simulasi paket lengkap (3 Mapel) untuk menguji daya tahan dan konsentrasi.</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+            <a href="level6.html" class="card">
+                <span class="badge bg-yellow">Standar</span>
+                <h3>Level 6: Geladi Resik</h3>
+                <p>Paket DY (Geladi). Simulasi dengan standar soal dinas yang paling mendekati ujian asli.</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+            <a href="level7.html" class="card">
+                <span class="badge bg-red">FINAL</span>
+                <h3>Level 7: The Final Boss</h3>
+                <p>Paket DX160 (April 2025). Prediksi pamungkas. Uji kesiapan akhirmu sebelum hari H!</p>
+                <div class="btn-start">Mulai Misi &rarr;</div>
+            </a>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mafia Quiz - Eko Mulyani<br>Sukses ASPD DIY!</p>
+    </footer>
+
+</body>
+</html>
