@@ -3,227 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAFIA QUIZ - ASPD 2025</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Mafia Quiz - Premium Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-sub: #6b7280;
-            --primary: #2563eb; /* Biru Vercel */
-            --primary-hover: #1d4ed8;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --accent-purple: #8b5cf6;
+            --primary: #FFD700;       /* Emas */
+            --bg-dark: #121212;       /* Latar Utama */
+            --sidebar-bg: #111111;    /* Latar Sidebar Lebih Gelap */
+            --card-bg: #1e1e1e;       /* Latar Kartu */
+            --card-hover: #2a2a2a;
+            --text-main: #ffffff;
+            --text-gray: #a0a0a0;
+            --border: #333333;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
             color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* HEADER SECTION */
-        .header {
-            background: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin: 0;
-            background: -webkit-linear-gradient(45deg, #2563eb, #9333ea);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
-        }
-
-        .header p {
-            margin-top: 0.5rem;
-            color: var(--text-sub);
-            font-size: 1rem;
-        }
-
-        /* GRID CONTAINER */
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            flex: 1;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        /* CARD STYLE */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
+            height: 100vh;
             overflow: hidden;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border-color: var(--primary);
+        .app-container { display: flex; height: 100%; width: 100%; }
+
+        /* --- SIDEBAR STYLE --- */
+        .sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
         }
 
-        /* Badge/Label di pojok kanan atas */
-        .badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+        /* Header Sidebar - Mirip Gambar 1 */
+        .brand-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: radial-gradient(circle at top, #1a1a1a, #111);
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
-        .bg-blue { background: #dbeafe; color: #1e40af; }
-        .bg-green { background: #d1fae5; color: #065f46; }
-        .bg-yellow { background: #fef3c7; color: #92400e; }
-        .bg-purple { background: #ede9fe; color: #5b21b6; }
-        .bg-red { background: #fee2e2; color: #991b1b; }
-
-        .card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin: 0 0 0.5rem 0;
-            color: var(--text-main);
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: #ccc;
+            margin: 5px 0 15px 0;
+            font-weight: 300;
         }
 
-        .card p {
-            font-size: 0.95rem;
-            color: var(--text-sub);
-            margin: 0 0 1.5rem 0;
-            line-height: 1.5;
-        }
-
-        .btn-start {
-            background-color: var(--primary);
-            color: white;
-            padding: 0.75rem;
-            border-radius: 8px;
-            text-align: center;
+        .premium-badge {
+            display: inline-block;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
-            transition: background 0.2s;
+            background: rgba(255, 215, 0, 0.1);
         }
 
-        .card:hover .btn-start {
-            background-color: var(--primary-hover);
+        /* List Menu */
+        .menu-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 15px;
+            padding-bottom: 100px; /* Space scroll bawah */
         }
 
-        /* FOOTER */
-        footer {
+        /* CARD STYLE - Updated Layout */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column; /* Stack vertikal untuk layout teks */
+            gap: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            background: var(--card-hover);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-title-group { flex: 1; }
+        .card-title { 
+            font-weight: 700; 
+            font-size: 1rem; 
+            color: #fff;
+            margin-bottom: 2px;
+            display: block;
+        }
+        
+        .card-desc { 
+            font-size: 0.8rem; 
+            color: var(--text-gray); 
+            line-height: 1.4;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Badge/Tag Style (Campuran, Sains, dll) */
+        .card-tag {
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+
+        /* Warna Tag sesuai konteks */
+        .tag-campuran { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .tag-sains { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .tag-numerasi { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .tag-indo { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .tag-standar { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
+        .tag-final { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* Icon kecil di sebelah judul */
+        .level-icon { color: var(--primary); margin-right: 8px; width: 20px; text-align: center;}
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; background: #000; }
+
+        .empty-state {
             text-align: center;
-            padding: 2rem;
-            color: var(--text-sub);
-            font-size: 0.875rem;
-            border-top: 1px solid #e5e7eb;
-            background: white;
-            margin-top: auto;
+            color: var(--text-gray);
+            position: absolute;
+            z-index: 1;
+            padding: 20px;
+        }
+        .empty-state i { font-size: 5rem; margin-bottom: 20px; color: #333; }
+        
+        /* Tombol Close Mobile */
+        .close-btn {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(0,0,0,0.8); color: var(--primary);
+            border: 1px solid var(--primary); padding: 8px 16px;
+            border-radius: 30px; cursor: pointer; z-index: 3000;
+            font-weight: 600; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
+        }
+        .close-btn:active { transform: scale(0.95); }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .app-container { display: block; }
+            .sidebar { width: 100%; height: 100vh; border-right: none; }
+            .main-content {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                z-index: 2000; transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .main-content.active { transform: translateX(0); }
+            .empty-state { display: none; }
         }
 
-        /* Responsif untuk HP */
-        @media (max-width: 640px) {
-            .header h1 { font-size: 1.75rem; }
-            .grid { grid-template-columns: 1fr; }
+        @media (min-width: 769px) {
+            .sidebar { width: 360px; flex-shrink: 0; }
+            .close-btn { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <h1>MAFIA QUIZ ASPD</h1>
-        <p>Latihan Soal Interaktif & Strategi Tuntas</p>
-    </header>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="brand-header">
+                <i class="fa-solid fa-user-secret logo-icon"></i>
+                <h1 class="brand-title">MAFIA QUIZ</h1>
+                <p class="brand-subtitle">Intensive ASPD Preparation Kit</p>
+                <div class="premium-badge">Premium Access 2026</div>
+            </div>
 
-    <div class="container">
-        <div class="grid">
-            
-            <a href="level1.html" class="card">
-                <span class="badge bg-blue">Campuran</span>
-                <h3>Level 1: Prediksi Maret</h3>
-                <p>Paket DX158. Pemanasan dengan soal prediksi terbaru (B.Indo, Mat, IPA) lengkap dengan kunci jawaban.</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+            <div class="menu-grid">
+                
+                <div class="card" onclick="openQuiz('level1.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-fire level-icon"></i> Level 1: Prediksi Maret</span>
+                        </div>
+                        <span class="card-tag tag-campuran">CAMPURAN</span>
+                    </div>
+                    <span class="card-desc">Paket DX158. Pemanasan dengan soal prediksi terbaru (B.Indo, Mat, IPA) lengkap dengan kunci jawaban.</span>
+                </div>
 
-            <a href="level2.html" class="card">
-                <span class="badge bg-green">Sains</span>
-                <h3>Level 2: Lab. Sains</h3>
-                <p>Paket P4 Sleman. Bedah tuntas materi IPA. Disertai pembahasan mendalam agar paham konsep.</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+                <div class="card" onclick="openQuiz('level2.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-flask level-icon"></i> Level 2: Lab. Sains</span>
+                        </div>
+                        <span class="card-tag tag-sains">SAINS</span>
+                    </div>
+                    <span class="card-desc">Paket P4 Sleman. Bedah tuntas materi IPA. Disertai pembahasan mendalam agar paham konsep.</span>
+                </div>
 
-            <a href="level3.html" class="card">
-                <span class="badge bg-yellow">Numerasi</span>
-                <h3>Level 3: Arena Logika</h3>
-                <p>Paket TO Propinsi. Latihan soal matematika HOTS dan logika. Siapkan kertas coret-coretanmu!</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+                <div class="card" onclick="openQuiz('level3.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-calculator level-icon"></i> Level 3: Arena Logika</span>
+                        </div>
+                        <span class="card-tag tag-numerasi">NUMERASI</span>
+                    </div>
+                    <span class="card-desc">Paket TO Propinsi. Latihan soal matematika HOTS dan logika. Siapkan kertas coret-coretanmu!</span>
+                </div>
 
-            <a href="level4.html" class="card">
-                <span class="badge bg-purple">B. Indo</span>
-                <h3>Level 4: Petualangan Bahasa</h3>
-                <p>Paket DX141. Fokus Literasi Membaca. Latihan teks panjang, ejaan, dan makna kata.</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+                <div class="card" onclick="openQuiz('level4.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-book-open level-icon"></i> Level 4: Petualangan Bahasa</span>
+                        </div>
+                        <span class="card-tag tag-indo">B. INDO</span>
+                    </div>
+                    <span class="card-desc">Paket DX141. Fokus Literasi Membaca. Latihan teks panjang, ejaan, dan makna kata.</span>
+                </div>
 
-            <a href="level5.html" class="card">
-                <span class="badge bg-blue">Campuran</span>
-                <h3>Level 5: Serangan Februari</h3>
-                <p>Paket DX154. Simulasi paket lengkap (3 Mapel) untuk menguji daya tahan dan konsentrasi.</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+                <div class="card" onclick="openQuiz('level5.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-shield-halved level-icon"></i> Level 5: Serangan Februari</span>
+                        </div>
+                        <span class="card-tag tag-campuran">CAMPURAN</span>
+                    </div>
+                    <span class="card-desc">Paket DX154. Simulasi paket lengkap (3 Mapel) untuk menguji daya tahan dan konsentrasi.</span>
+                </div>
 
-            <a href="level6.html" class="card">
-                <span class="badge bg-yellow">Standar</span>
-                <h3>Level 6: Geladi Resik</h3>
-                <p>Paket DY (Geladi). Simulasi dengan standar soal dinas yang paling mendekati ujian asli.</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+                <div class="card" onclick="openQuiz('level6.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-clipboard-check level-icon"></i> Level 6: Geladi Resik</span>
+                        </div>
+                        <span class="card-tag tag-standar">STANDAR</span>
+                    </div>
+                    <span class="card-desc">Paket DY (Geladi). Simulasi dengan standar soal dinas yang paling mendekati ujian asli.</span>
+                </div>
 
-            <a href="level7.html" class="card">
-                <span class="badge bg-red">FINAL</span>
-                <h3>Level 7: The Final Boss</h3>
-                <p>Paket DX160 (April 2025). Prediksi pamungkas. Uji kesiapan akhirmu sebelum hari H!</p>
-                <div class="btn-start">Mulai Misi &rarr;</div>
-            </a>
+                 <div class="card" onclick="openQuiz('level7.html')">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-title"><i class="fa-solid fa-crown level-icon"></i> Level 7: The Final Boss</span>
+                        </div>
+                        <span class="card-tag tag-final">FINAL</span>
+                    </div>
+                    <span class="card-desc">Paket DX160 (April 2025). Prediksi pamungkas. Uji kesiapan akhirmu sebelum hari H!</span>
+                </div>
 
-        </div>
+            </div>
+        </nav>
+
+        <main class="main-content" id="mainContent">
+            <button class="close-btn" onclick="closeQuiz()">
+                <i class="fa-solid fa-xmark"></i> Kembali ke Menu
+            </button>
+
+            <div class="empty-state" id="emptyState">
+                <i class="fa-solid fa-user-secret"></i>
+                <h2>Siap Mengerjakan Misi?</h2>
+                <p>Pilih paket soal di menu sebelah kiri untuk memulai simulasi.</p>
+            </div>
+
+            <iframe id="quizFrame" src="" allowfullscreen></iframe>
+        </main>
     </div>
 
-    <footer>
-        <p>&copy; 2025 Mafia Quiz - Eko Mulyani<br>Sukses ASPD DIY!</p>
-    </footer>
+    <script>
+        const mainContent = document.getElementById('mainContent');
+        const quizFrame = document.getElementById('quizFrame');
+        const emptyState = document.getElementById('emptyState');
 
+        function openQuiz(url) {
+            quizFrame.src = url;
+            if(window.innerWidth > 768) {
+                emptyState.style.display = 'none';
+                quizFrame.style.display = 'block';
+            }
+            mainContent.classList.add('active');
+        }
+
+        function closeQuiz() {
+            mainContent.classList.remove('active');
+            setTimeout(() => { quizFrame.src = ''; }, 300);
+        }
+
+        window.addEventListener('resize', () => {
+            if(window.innerWidth > 768) {
+                mainContent.classList.remove('active');
+                if(!quizFrame.getAttribute('src')) emptyState.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
