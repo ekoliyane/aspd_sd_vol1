@@ -7,100 +7,101 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* --- 1. VARIABEL & RESET --- */
         :root {
-            --primary: #FFD700;       
-            --bg-dark: #121212;       
-            --sidebar-bg: #111111;    
-            --card-bg: #1e1e1e;       
+            --primary: #FFD700;       /* Emas */
+            --bg-dark: #121212;       /* Latar Utama */
+            --sidebar-bg: #111111;    /* Sidebar */
+            --card-bg: #1e1e1e;       /* Kartu */
             --card-hover: #2a2a2a;
             --text-main: #ffffff;
             --text-gray: #a0a0a0;
             --border: #333333;
-            --header-height: 60px; /* Tinggi header mobile */
+            --header-height: 60px;    /* Tinggi Header HP */
         }
 
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
         body {
             margin: 0; padding: 0;
             font-family: 'Outfit', sans-serif;
             background: var(--bg-dark);
             color: var(--text-main);
-            height: 100vh; height: 100dvh;
+            height: 100vh; height: 100dvh; /* Support browser mobile modern */
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* --- MOBILE HEADER (NEW) --- */
+        /* --- 2. HEADER MOBILE (Hanya Muncul di HP) --- */
         .mobile-header {
-            display: none; /* Default hidden di desktop */
+            display: none; /* Default hidden di PC */
             height: var(--header-height);
             background: var(--sidebar-bg);
             border-bottom: 1px solid var(--border);
-            align-items: center;
-            justify-content: space-between;
+            align-items: center; justify-content: space-between;
             padding: 0 20px;
             position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
         }
 
         .mobile-brand {
-            font-weight: 700; color: var(--primary); letter-spacing: 1px;
-            display: flex; align-items: center; gap: 10px;
+            font-weight: 800; color: var(--primary); letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px; font-size: 1.1rem;
+            text-transform: uppercase;
         }
 
         .menu-toggle-btn {
-            background: transparent; border: 1px solid var(--border);
-            color: var(--primary); font-size: 1.2rem;
+            background: rgba(255, 215, 0, 0.1); border: 1px solid var(--border);
+            color: var(--primary); font-size: 1.1rem;
             width: 40px; height: 40px; border-radius: 8px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
         }
+        .menu-toggle-btn:active { transform: scale(0.95); }
 
-        /* --- LAYOUT CONTAINER --- */
+        /* --- 3. LAYOUT UTAMA --- */
         .app-container { 
             display: flex; 
             height: 100%; 
             width: 100%; 
-            margin-top: 0; /* Desktop */
+            margin-top: 0;
+            position: relative;
         }
 
-        /* --- SIDEBAR STYLE --- */
+        /* --- 4. SIDEBAR (MENU) --- */
         .sidebar {
             width: 360px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            z-index: 2001;
-            flex-shrink: 0;
+            display: flex; flex-direction: column;
+            z-index: 2001; flex-shrink: 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Header Sidebar (Desktop & Mobile Drawer) */
+        /* Header Sidebar */
         .brand-header {
             padding: 30px 20px;
             text-align: center;
             border-bottom: 1px solid var(--border);
-            background: radial-gradient(circle at top, #1a1a1a, #111);
+            background: radial-gradient(circle at top, #1a1a1a, #0e0e0e);
             position: relative;
         }
 
-        /* Tombol close khusus di dalam sidebar mobile */
+        /* Tombol Close X di dalam sidebar (Mobile only) */
         .mobile-close-btn {
-            display: none;
-            position: absolute; top: 15px; right: 15px;
-            background: rgba(255,255,255,0.05); border: 1px solid #333;
-            color: #fff; width: 35px; height: 35px; border-radius: 50%;
+            display: none; position: absolute; top: 15px; right: 15px;
+            background: rgba(255,255,255,0.1); border: 1px solid #333;
+            color: #fff; width: 32px; height: 32px; border-radius: 50%;
             align-items: center; justify-content: center; cursor: pointer;
         }
 
         .logo-icon {
             font-size: 3rem; color: var(--primary); margin-bottom: 10px;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
         .brand-title {
@@ -115,19 +116,18 @@
         .premium-badge {
             display: inline-block; border: 1px solid var(--primary);
             color: var(--primary); padding: 4px 12px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 600; background: rgba(255, 215, 0, 0.1);
+            font-size: 0.7rem; font-weight: 700; background: rgba(255, 215, 0, 0.1);
         }
 
-        /* List Menu */
+        /* Menu Grid */
         .menu-grid {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-            display: grid; grid-template-columns: 1fr; gap: 15px;
-            padding-bottom: 50px;
+            padding: 15px;
+            overflow-y: auto; flex: 1;
+            display: flex; flex-direction: column; gap: 12px;
+            padding-bottom: 80px; /* Ruang scroll bawah */
         }
 
-        /* CARD STYLE (Dari Revisi.html) */
+        /* Desain Kartu Menu */
         .card {
             background: var(--card-bg);
             border: 1px solid #333;
@@ -135,34 +135,26 @@
             padding: 16px;
             cursor: pointer;
             transition: all 0.2s ease;
-            position: relative;
-            display: flex; flex-direction: column; gap: 10px;
+            display: flex; flex-direction: column; gap: 8px;
         }
 
         .card:hover, .card.active {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             background: var(--card-hover);
             border-color: var(--primary);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
-        /* Active state style agar user tahu sedang pilih mana */
-        .card.active { border-color: var(--primary); background: #252525; transform: none; }
+        
+        .card.active { background: #252525; transform: none; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .card-title-group { flex: 1; }
-        .card-title { 
-            font-weight: 700; font-size: 1rem; color: #fff;
-            margin-bottom: 2px; display: block;
-        }
-        .card-desc { 
-            font-size: 0.8rem; color: var(--text-gray); 
-            line-height: 1.4; display: block; margin-top: 5px;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-weight: 700; font-size: 0.95rem; color: #fff; }
+        .card-desc { font-size: 0.8rem; color: var(--text-gray); line-height: 1.4; }
 
-        /* Tags */
+        /* Tags/Label */
         .card-tag {
-            font-size: 0.6rem; padding: 3px 8px; border-radius: 6px;
-            font-weight: 700; text-transform: uppercase; white-space: nowrap; margin-left: 10px;
+            font-size: 0.6rem; padding: 4px 8px; border-radius: 6px;
+            font-weight: 700; text-transform: uppercase; white-space: nowrap;
         }
         .tag-campuran { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
         .tag-sains { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
@@ -170,55 +162,94 @@
         .tag-indo { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
         .tag-standar { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
         .tag-final { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .level-icon { color: var(--primary); margin-right: 8px; width: 20px; text-align: center;}
+        
+        .level-icon { color: var(--primary); margin-right: 8px; width: 20px; text-align: center; }
 
-        /* --- MAIN CONTENT --- */
+        /* --- 5. MAIN CONTENT & PLACEHOLDER --- */
         .main-content {
             flex: 1;
             background: #000;
             position: relative;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             width: 100%;
         }
 
-        iframe { width: 100%; height: 100%; border: none; background: #fff; }
+        iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
 
-        /* Placeholder State */
-        .empty-state {
+        /* Placeholder / Halaman Depan (Sudah Diperbaiki) */
+        .placeholder {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #000; color: var(--text-gray); z-index: 10;
-            text-align: center; padding: 20px;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 90%); /* Background Gradien */
+            padding: 30px;
+            z-index: 10;
+            text-align: center;
         }
-        .empty-state i { font-size: 5rem; margin-bottom: 20px; color: #333; }
-        .empty-state h2 { color: #fff; margin-bottom: 10px; }
 
-        /* Backdrop untuk Mobile */
+        /* Ikon Utama Emas Glowing */
+        .placeholder-icon {
+            color: var(--primary);
+            font-size: 5rem;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .placeholder h2 {
+            color: #ffffff;
+            font-size: 1.8rem; font-weight: 800;
+            margin: 0 0 15px 0; letter-spacing: 0.5px;
+        }
+
+        .placeholder p {
+            color: #d0d0d0; /* Teks terang agar terbaca */
+            font-size: 1rem; line-height: 1.6;
+            max-width: 400px; margin: 0 auto;
+        }
+
+        .placeholder-btn-icon {
+            display: inline-block;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 2px 6px; border-radius: 4px;
+            margin: 0 4px; font-size: 0.8rem;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        /* --- 6. UTILITIES MOBILE --- */
         .sidebar-backdrop {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 2000;
             opacity: 0; transition: opacity 0.3s ease;
+            backdrop-filter: blur(2px);
         }
 
-        /* --- RESPONSIVE LOGIC --- */
+        /* MEDIA QUERIES */
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
             .app-container { margin-top: var(--header-height); height: calc(100vh - var(--header-height)); }
             
             .sidebar {
                 position: fixed; top: 0; left: 0; bottom: 0;
-                width: 300px; height: 100vh;
+                width: 285px; height: 100vh;
                 transform: translateX(-100%); /* Sembunyi ke kiri */
                 border-right: none;
-                box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+                box-shadow: 5px 0 25px rgba(0,0,0,0.8);
             }
             
             .sidebar.open { transform: translateX(0); }
             .sidebar-backdrop.show { display: block; opacity: 1; }
-            .mobile-close-btn { display: flex; } /* Tampilkan tombol close di dalam sidebar */
+            .mobile-close-btn { display: flex; } 
+            .brand-header { padding-top: 50px; }
             
-            .brand-header { padding-top: 40px; } /* Space untuk tombol close */
+            /* Sembunyikan ikon menu di teks placeholder jika di Desktop (opsional), 
+               tapi di sini kita biarkan agar instruksi jelas di mobile */
         }
     </style>
 </head>
@@ -226,7 +257,7 @@
 
     <div class="mobile-header">
         <div class="mobile-brand">
-            <i class="fa-solid fa-user-secret"></i> MAFIA QUIZ
+            <i class="fa-solid fa-user-secret" style="margin-right:8px;"></i> Mafia Quiz
         </div>
         <button class="menu-toggle-btn" onclick="toggleSidebar()">
             <i class="fa-solid fa-bars"></i>
@@ -236,6 +267,7 @@
     <div class="sidebar-backdrop" id="backdrop" onclick="toggleSidebar()"></div>
 
     <div class="app-container">
+        
         <nav class="sidebar" id="sidebar">
             <div class="brand-header">
                 <div class="mobile-close-btn" onclick="toggleSidebar()">
@@ -243,90 +275,78 @@
                 </div>
 
                 <i class="fa-solid fa-user-secret logo-icon"></i>
-                <h1 class="brand-title">MAFIA QUIZ <br><span style="font-size: 1rem; font-weight: 400;">Special for LALA</span></h1>
+                <h1 class="brand-title">MAFIA QUIZ <br><span style="font-size: 1rem; font-weight: 400; color: #fff;">Special for LALA</span></h1>
                 <p class="brand-subtitle">Intensive ASPD Preparation Kit</p>
-                <div class="premium-badge">Premium Access 2026</div>
+                <div class="premium-badge">PREMIUM ACCESS 2026</div>
             </div>
 
             <div class="menu-grid">
                 <div class="card" onclick="loadQuiz(this, 'level1.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-fire level-icon"></i> Level 1: Prediksi Maret</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-fire level-icon"></i> Level 1: Prediksi Maret</span>
                         <span class="card-tag tag-campuran">CAMPURAN</span>
                     </div>
-                    <span class="card-desc">Paket DX158. Pemanasan dengan soal prediksi terbaru lengkap dengan kunci jawaban.</span>
+                    <span class="card-desc">Paket DX158. Pemanasan soal prediksi terbaru lengkap kunci jawaban.</span>
                 </div>
 
                 <div class="card" onclick="loadQuiz(this, 'level2.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-flask level-icon"></i> Level 2: Lab. Sains</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-flask level-icon"></i> Level 2: Lab. Sains</span>
                         <span class="card-tag tag-sains">SAINS</span>
                     </div>
-                    <span class="card-desc">Paket P4 Sleman. Bedah tuntas materi IPA dengan pembahasan konsep mendalam.</span>
+                    <span class="card-desc">Paket P4 Sleman. Bedah tuntas materi IPA dengan pembahasan konsep.</span>
                 </div>
 
                 <div class="card" onclick="loadQuiz(this, 'level3.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-calculator level-icon"></i> Level 3: Arena Logika</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-calculator level-icon"></i> Level 3: Arena Logika</span>
                         <span class="card-tag tag-numerasi">NUMERASI</span>
                     </div>
-                    <span class="card-desc">Paket TO Propinsi. Latihan soal matematika HOTS dan logika. Siapkan kertas coret-coretan!</span>
+                    <span class="card-desc">Paket TO Propinsi. Latihan Matematika HOTS. Siapkan kertas coret-coretan!</span>
                 </div>
 
                 <div class="card" onclick="loadQuiz(this, 'level4.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-book-open level-icon"></i> Level 4: Bahasa</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-book-open level-icon"></i> Level 4: Bahasa</span>
                         <span class="card-tag tag-indo">B. INDO</span>
                     </div>
-                    <span class="card-desc">Paket DX141. Fokus Literasi Membaca. Latihan teks panjang, ejaan, dan makna kata.</span>
+                    <span class="card-desc">Paket DX141. Literasi Membaca. Latihan teks panjang dan makna kata.</span>
                 </div>
 
                 <div class="card" onclick="loadQuiz(this, 'level5.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-shield-halved level-icon"></i> Level 5: Serangan Feb</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-shield-halved level-icon"></i> Level 5: Serangan Feb</span>
                         <span class="card-tag tag-campuran">CAMPURAN</span>
                     </div>
-                    <span class="card-desc">Paket DX154. Simulasi paket lengkap (3 Mapel) untuk menguji daya tahan.</span>
+                    <span class="card-desc">Paket DX154. Simulasi paket lengkap (3 Mapel) uji daya tahan.</span>
                 </div>
 
                 <div class="card" onclick="loadQuiz(this, 'level6.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-clipboard-check level-icon"></i> Level 6: Geladi Resik</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-clipboard-check level-icon"></i> Level 6: Geladi Resik</span>
                         <span class="card-tag tag-standar">STANDAR</span>
                     </div>
-                    <span class="card-desc">Paket DY (Geladi). Simulasi dengan standar soal dinas yang paling mendekati ujian asli.</span>
+                    <span class="card-desc">Paket DY (Geladi). Simulasi standar soal dinas mendekati ujian asli.</span>
                 </div>
 
                  <div class="card" onclick="loadQuiz(this, 'level7.html')">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-crown level-icon"></i> Level 7: The Final Boss</span>
-                        </div>
+                        <span class="card-title"><i class="fa-solid fa-crown level-icon"></i> Level 7: The Final Boss</span>
                         <span class="card-tag tag-final">FINAL</span>
                     </div>
-                    <span class="card-desc">Paket DX160 (April 2025). Prediksi pamungkas. Uji kesiapan akhirmu!</span>
+                    <span class="card-desc">Paket DX160 (April 2025). Prediksi pamungkas sebelum hari H!</span>
                 </div>
-
             </div>
         </nav>
 
         <main class="main-content">
-            <div class="empty-state" id="emptyState">
-                <i class="fa-solid fa-user-secret"></i>
+            <div class="placeholder" id="placeholder">
+                <i class="fa-solid fa-user-secret placeholder-icon"></i>
                 <h2>Halo LALA!</h2>
-                <p>Klik tombol menu <i class="fa-solid fa-bars"></i> di pojok kiri atas untuk memilih misi.</p>
+                <p>
+                    Siap mengerjakan misi hari ini?<br>
+                    Klik tombol menu <i class="fa-solid fa-bars placeholder-btn-icon"></i> di pojok kiri atas untuk memilih paket soal.
+                </p>
             </div>
 
             <iframe id="quizFrame" src="" allowfullscreen></iframe>
@@ -337,11 +357,12 @@
         const sidebar = document.getElementById('sidebar');
         const backdrop = document.getElementById('backdrop');
         const quizFrame = document.getElementById('quizFrame');
-        const emptyState = document.getElementById('emptyState');
+        const placeholder = document.getElementById('placeholder');
         const cards = document.querySelectorAll('.card');
 
         // Fungsi Buka/Tutup Sidebar Mobile
         function toggleSidebar() {
+            // Hanya jalankan jika layar kecil (Mobile/Tablet)
             if(window.innerWidth <= 768) {
                 sidebar.classList.toggle('open');
                 backdrop.classList.toggle('show');
@@ -350,17 +371,18 @@
 
         // Fungsi Load Quiz ke Iframe
         function loadQuiz(element, url) {
-            // Set URL
+            // 1. Masukkan URL ke iframe
             quizFrame.src = url;
             
-            // Sembunyikan pesan "Halo Lala"
-            emptyState.style.display = 'none';
+            // 2. Sembunyikan placeholder, tampilkan iframe
+            placeholder.style.display = 'none';
+            quizFrame.style.display = 'block';
 
-            // Highlight kartu yang dipilih
+            // 3. Highlight kartu yang dipilih (UI Feedback)
             cards.forEach(c => c.classList.remove('active'));
             element.classList.add('active');
 
-            // Tutup sidebar otomatis jika di HP
+            // 4. Tutup sidebar otomatis jika di HP
             if(window.innerWidth <= 768) {
                 toggleSidebar();
             }
