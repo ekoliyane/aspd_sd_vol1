@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mafia Quiz - Premium Dashboard</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,14 +12,15 @@
 
     <style>
         :root {
-            --primary: #FFD700;       /* Emas */
-            --bg-dark: #121212;       /* Latar Utama */
-            --sidebar-bg: #111111;    /* Latar Sidebar Lebih Gelap */
-            --card-bg: #1e1e1e;       /* Latar Kartu */
+            --primary: #FFD700;       
+            --bg-dark: #121212;       
+            --sidebar-bg: #111111;    
+            --card-bg: #1e1e1e;       
             --card-hover: #2a2a2a;
             --text-main: #ffffff;
             --text-gray: #a0a0a0;
             --border: #333333;
+            --header-height: 60px; /* Tinggi header mobile */
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -29,74 +30,104 @@
             font-family: 'Outfit', sans-serif;
             background: var(--bg-dark);
             color: var(--text-main);
-            height: 100vh;
+            height: 100vh; height: 100dvh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .app-container { display: flex; height: 100%; width: 100%; }
+        /* --- MOBILE HEADER (NEW) --- */
+        .mobile-header {
+            display: none; /* Default hidden di desktop */
+            height: var(--header-height);
+            background: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+        }
+
+        .mobile-brand {
+            font-weight: 700; color: var(--primary); letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .menu-toggle-btn {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--primary); font-size: 1.2rem;
+            width: 40px; height: 40px; border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- LAYOUT CONTAINER --- */
+        .app-container { 
+            display: flex; 
+            height: 100%; 
+            width: 100%; 
+            margin-top: 0; /* Desktop */
+        }
 
         /* --- SIDEBAR STYLE --- */
         .sidebar {
+            width: 360px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            z-index: 10;
+            z-index: 2001;
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Header Sidebar - Mirip Gambar 1 */
+        /* Header Sidebar (Desktop & Mobile Drawer) */
         .brand-header {
             padding: 30px 20px;
             text-align: center;
             border-bottom: 1px solid var(--border);
             background: radial-gradient(circle at top, #1a1a1a, #111);
+            position: relative;
+        }
+
+        /* Tombol close khusus di dalam sidebar mobile */
+        .mobile-close-btn {
+            display: none;
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(255,255,255,0.05); border: 1px solid #333;
+            color: #fff; width: 35px; height: 35px; border-radius: 50%;
+            align-items: center; justify-content: center; cursor: pointer;
         }
 
         .logo-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 10px;
+            font-size: 3rem; color: var(--primary); margin-bottom: 10px;
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         .brand-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-size: 1.5rem; font-weight: 800; color: var(--primary);
+            margin: 0; letter-spacing: 1px; text-transform: uppercase;
         }
 
         .brand-subtitle {
-            font-size: 0.8rem;
-            color: #ccc;
-            margin: 5px 0 15px 0;
-            font-weight: 300;
+            font-size: 0.8rem; color: #ccc; margin: 5px 0 15px 0; font-weight: 300;
         }
 
         .premium-badge {
-            display: inline-block;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: rgba(255, 215, 0, 0.1);
+            display: inline-block; border: 1px solid var(--primary);
+            color: var(--primary); padding: 4px 12px; border-radius: 20px;
+            font-size: 0.7rem; font-weight: 600; background: rgba(255, 215, 0, 0.1);
         }
 
         /* List Menu */
         .menu-grid {
             padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr; 
-            gap: 15px;
-            padding-bottom: 100px; /* Space scroll bawah */
+            overflow-y: auto;
+            flex: 1;
+            display: grid; grid-template-columns: 1fr; gap: 15px;
+            padding-bottom: 50px;
         }
 
-        /* CARD STYLE - Updated Layout */
+        /* CARD STYLE (Dari Revisi.html) */
         .card {
             background: var(--card-bg);
             border: 1px solid #333;
@@ -105,61 +136,40 @@
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
-            display: flex;
-            flex-direction: column; /* Stack vertikal untuk layout teks */
-            gap: 10px;
+            display: flex; flex-direction: column; gap: 10px;
         }
 
-        .card:hover {
+        .card:hover, .card.active {
             transform: translateY(-3px);
             background: var(--card-hover);
             border-color: var(--primary);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+        /* Active state style agar user tahu sedang pilih mana */
+        .card.active { border-color: var(--primary); background: #252525; transform: none; }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .card-title-group { flex: 1; }
         .card-title { 
-            font-weight: 700; 
-            font-size: 1rem; 
-            color: #fff;
-            margin-bottom: 2px;
-            display: block;
+            font-weight: 700; font-size: 1rem; color: #fff;
+            margin-bottom: 2px; display: block;
         }
-        
         .card-desc { 
-            font-size: 0.8rem; 
-            color: var(--text-gray); 
-            line-height: 1.4;
-            display: block;
-            margin-top: 5px;
+            font-size: 0.8rem; color: var(--text-gray); 
+            line-height: 1.4; display: block; margin-top: 5px;
         }
 
-        /* Badge/Tag Style (Campuran, Sains, dll) */
+        /* Tags */
         .card-tag {
-            font-size: 0.6rem;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-weight: 700;
-            text-transform: uppercase;
-            white-space: nowrap;
-            margin-left: 10px;
+            font-size: 0.6rem; padding: 3px 8px; border-radius: 6px;
+            font-weight: 700; text-transform: uppercase; white-space: nowrap; margin-left: 10px;
         }
-
-        /* Warna Tag sesuai konteks */
         .tag-campuran { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
         .tag-sains { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
         .tag-numerasi { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
         .tag-indo { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
         .tag-standar { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
         .tag-final { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-
-        /* Icon kecil di sebelah judul */
         .level-icon { color: var(--primary); margin-right: 8px; width: 20px; text-align: center;}
 
         /* --- MAIN CONTENT --- */
@@ -169,115 +179,127 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 100%;
         }
 
-        iframe { width: 100%; height: 100%; border: none; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
+        /* Placeholder State */
         .empty-state {
-            text-align: center;
-            color: var(--text-gray);
-            position: absolute;
-            z-index: 1;
-            padding: 20px;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #000; color: var(--text-gray); z-index: 10;
+            text-align: center; padding: 20px;
         }
         .empty-state i { font-size: 5rem; margin-bottom: 20px; color: #333; }
-        
-        /* Tombol Close Mobile */
-        .close-btn {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.8); color: var(--primary);
-            border: 1px solid var(--primary); padding: 8px 16px;
-            border-radius: 30px; cursor: pointer; z-index: 3000;
-            font-weight: 600; display: flex; align-items: center; gap: 8px;
-            transition: 0.2s;
-        }
-        .close-btn:active { transform: scale(0.95); }
+        .empty-state h2 { color: #fff; margin-bottom: 10px; }
 
-        /* RESPONSIVE */
+        /* Backdrop untuk Mobile */
+        .sidebar-backdrop {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+
+        /* --- RESPONSIVE LOGIC --- */
         @media (max-width: 768px) {
-            .app-container { display: block; }
-            .sidebar { width: 100%; height: 100vh; border-right: none; }
-            .main-content {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                z-index: 2000; transform: translateX(100%);
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            .mobile-header { display: flex; }
+            .app-container { margin-top: var(--header-height); height: calc(100vh - var(--header-height)); }
+            
+            .sidebar {
+                position: fixed; top: 0; left: 0; bottom: 0;
+                width: 300px; height: 100vh;
+                transform: translateX(-100%); /* Sembunyi ke kiri */
+                border-right: none;
+                box-shadow: 5px 0 25px rgba(0,0,0,0.5);
             }
-            .main-content.active { transform: translateX(0); }
-            .empty-state { display: none; }
-        }
-
-        @media (min-width: 769px) {
-            .sidebar { width: 360px; flex-shrink: 0; }
-            .close-btn { display: none; }
+            
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-backdrop.show { display: block; opacity: 1; }
+            .mobile-close-btn { display: flex; } /* Tampilkan tombol close di dalam sidebar */
+            
+            .brand-header { padding-top: 40px; } /* Space untuk tombol close */
         }
     </style>
 </head>
 <body>
 
+    <div class="mobile-header">
+        <div class="mobile-brand">
+            <i class="fa-solid fa-user-secret"></i> MAFIA QUIZ
+        </div>
+        <button class="menu-toggle-btn" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-backdrop" id="backdrop" onclick="toggleSidebar()"></div>
+
     <div class="app-container">
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="brand-header">
+                <div class="mobile-close-btn" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+
                 <i class="fa-solid fa-user-secret logo-icon"></i>
-                <h1 class="brand-title">MAFIA QUIZ Special for LALA </h1>
+                <h1 class="brand-title">MAFIA QUIZ <br><span style="font-size: 1rem; font-weight: 400;">Special for LALA</span></h1>
                 <p class="brand-subtitle">Intensive ASPD Preparation Kit</p>
                 <div class="premium-badge">Premium Access 2026</div>
             </div>
 
             <div class="menu-grid">
-                
-                <div class="card" onclick="openQuiz('level1.html')">
+                <div class="card" onclick="loadQuiz(this, 'level1.html')">
                     <div class="card-header">
                         <div class="card-title-group">
                             <span class="card-title"><i class="fa-solid fa-fire level-icon"></i> Level 1: Prediksi Maret</span>
                         </div>
                         <span class="card-tag tag-campuran">CAMPURAN</span>
                     </div>
-                    <span class="card-desc">Paket DX158. Pemanasan dengan soal prediksi terbaru (B.Indo, Mat, IPA) lengkap dengan kunci jawaban.</span>
+                    <span class="card-desc">Paket DX158. Pemanasan dengan soal prediksi terbaru lengkap dengan kunci jawaban.</span>
                 </div>
 
-                <div class="card" onclick="openQuiz('level2.html')">
+                <div class="card" onclick="loadQuiz(this, 'level2.html')">
                     <div class="card-header">
                         <div class="card-title-group">
                             <span class="card-title"><i class="fa-solid fa-flask level-icon"></i> Level 2: Lab. Sains</span>
                         </div>
                         <span class="card-tag tag-sains">SAINS</span>
                     </div>
-                    <span class="card-desc">Paket P4 Sleman. Bedah tuntas materi IPA. Disertai pembahasan mendalam agar paham konsep.</span>
+                    <span class="card-desc">Paket P4 Sleman. Bedah tuntas materi IPA dengan pembahasan konsep mendalam.</span>
                 </div>
 
-                <div class="card" onclick="openQuiz('level3.html')">
+                <div class="card" onclick="loadQuiz(this, 'level3.html')">
                     <div class="card-header">
                         <div class="card-title-group">
                             <span class="card-title"><i class="fa-solid fa-calculator level-icon"></i> Level 3: Arena Logika</span>
                         </div>
                         <span class="card-tag tag-numerasi">NUMERASI</span>
                     </div>
-                    <span class="card-desc">Paket TO Propinsi. Latihan soal matematika HOTS dan logika. Siapkan kertas coret-coretanmu!</span>
+                    <span class="card-desc">Paket TO Propinsi. Latihan soal matematika HOTS dan logika. Siapkan kertas coret-coretan!</span>
                 </div>
 
-                <div class="card" onclick="openQuiz('level4.html')">
+                <div class="card" onclick="loadQuiz(this, 'level4.html')">
                     <div class="card-header">
                         <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-book-open level-icon"></i> Level 4: Petualangan Bahasa</span>
+                            <span class="card-title"><i class="fa-solid fa-book-open level-icon"></i> Level 4: Bahasa</span>
                         </div>
                         <span class="card-tag tag-indo">B. INDO</span>
                     </div>
                     <span class="card-desc">Paket DX141. Fokus Literasi Membaca. Latihan teks panjang, ejaan, dan makna kata.</span>
                 </div>
 
-                <div class="card" onclick="openQuiz('level5.html')">
+                <div class="card" onclick="loadQuiz(this, 'level5.html')">
                     <div class="card-header">
                         <div class="card-title-group">
-                            <span class="card-title"><i class="fa-solid fa-shield-halved level-icon"></i> Level 5: Serangan Februari</span>
+                            <span class="card-title"><i class="fa-solid fa-shield-halved level-icon"></i> Level 5: Serangan Feb</span>
                         </div>
                         <span class="card-tag tag-campuran">CAMPURAN</span>
                     </div>
-                    <span class="card-desc">Paket DX154. Simulasi paket lengkap (3 Mapel) untuk menguji daya tahan dan konsentrasi.</span>
+                    <span class="card-desc">Paket DX154. Simulasi paket lengkap (3 Mapel) untuk menguji daya tahan.</span>
                 </div>
 
-                <div class="card" onclick="openQuiz('level6.html')">
+                <div class="card" onclick="loadQuiz(this, 'level6.html')">
                     <div class="card-header">
                         <div class="card-title-group">
                             <span class="card-title"><i class="fa-solid fa-clipboard-check level-icon"></i> Level 6: Geladi Resik</span>
@@ -287,28 +309,24 @@
                     <span class="card-desc">Paket DY (Geladi). Simulasi dengan standar soal dinas yang paling mendekati ujian asli.</span>
                 </div>
 
-                 <div class="card" onclick="openQuiz('level7.html')">
+                 <div class="card" onclick="loadQuiz(this, 'level7.html')">
                     <div class="card-header">
                         <div class="card-title-group">
                             <span class="card-title"><i class="fa-solid fa-crown level-icon"></i> Level 7: The Final Boss</span>
                         </div>
                         <span class="card-tag tag-final">FINAL</span>
                     </div>
-                    <span class="card-desc">Paket DX160 (April 2025). Prediksi pamungkas. Uji kesiapan akhirmu sebelum hari H!</span>
+                    <span class="card-desc">Paket DX160 (April 2025). Prediksi pamungkas. Uji kesiapan akhirmu!</span>
                 </div>
 
             </div>
         </nav>
 
-        <main class="main-content" id="mainContent">
-            <button class="close-btn" onclick="closeQuiz()">
-                <i class="fa-solid fa-xmark"></i> Kembali ke Menu
-            </button>
-
+        <main class="main-content">
             <div class="empty-state" id="emptyState">
                 <i class="fa-solid fa-user-secret"></i>
-                <h2>Halo LALA! Siap Mengerjakan Misi?</h2>
-                <p>Pilih paket soal di menu sebelah kiri untuk memulai simulasi.</p>
+                <h2>Halo LALA!</h2>
+                <p>Klik tombol menu <i class="fa-solid fa-bars"></i> di pojok kiri atas untuk memilih misi.</p>
             </div>
 
             <iframe id="quizFrame" src="" allowfullscreen></iframe>
@@ -316,32 +334,37 @@
     </div>
 
     <script>
-        const mainContent = document.getElementById('mainContent');
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('backdrop');
         const quizFrame = document.getElementById('quizFrame');
         const emptyState = document.getElementById('emptyState');
+        const cards = document.querySelectorAll('.card');
 
-        function openQuiz(url) {
+        // Fungsi Buka/Tutup Sidebar Mobile
+        function toggleSidebar() {
+            if(window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+                backdrop.classList.toggle('show');
+            }
+        }
+
+        // Fungsi Load Quiz ke Iframe
+        function loadQuiz(element, url) {
+            // Set URL
             quizFrame.src = url;
-            if(window.innerWidth > 768) {
-                emptyState.style.display = 'none';
-                quizFrame.style.display = 'block';
-            }
-            mainContent.classList.add('active');
-        }
+            
+            // Sembunyikan pesan "Halo Lala"
+            emptyState.style.display = 'none';
 
-        function closeQuiz() {
-            mainContent.classList.remove('active');
-            setTimeout(() => { quizFrame.src = ''; }, 300);
-        }
+            // Highlight kartu yang dipilih
+            cards.forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
 
-        window.addEventListener('resize', () => {
-            if(window.innerWidth > 768) {
-                mainContent.classList.remove('active');
-                if(!quizFrame.getAttribute('src')) emptyState.style.display = 'block';
+            // Tutup sidebar otomatis jika di HP
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
             }
-        });
+        }
     </script>
 </body>
-
 </html>
-
